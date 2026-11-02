@@ -1,0 +1,22 @@
+name: Idea or feature
+description: Suggest an improvement, a new component, or a docs change
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: What would you like to do?
+      description: The use case, not only the solution. Where do you run the FWI chain?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal
+      description: For new equations, please cite the published source.
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Contribution
+      options:
+        - label: I'd like to work on this myself

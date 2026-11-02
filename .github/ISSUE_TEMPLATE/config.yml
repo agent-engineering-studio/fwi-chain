@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: How the FWI works
+    url: https://github.com/agent-engineering-studio/fwi-chain/blob/main/docs/how-fwi-works.md
+    about: The science in plain words. Many questions are answered here.
+  - name: FAQ
+    url: https://github.com/agent-engineering-studio/fwi-chain/blob/main/docs/faq.md
+    about: Short answers to common questions.

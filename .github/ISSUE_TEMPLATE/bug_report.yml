@@ -1,0 +1,39 @@
+name: Bug or wrong value
+description: Something crashes, or a value disagrees with a reference implementation
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time! For a wrong value, the inputs and the start state are
+        all we need to reproduce it.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you expected, and what you got instead.
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: The `advance(...)` call (or individual function call) with its inputs.
+      render: python
+      placeholder: |
+        from fwi_chain import STANDARD_PARAMS, FwiState, advance
+        out = advance(FwiState(85, 6, 15), month=4, temperature_c=17, relative_humidity_pct=42,
+                      wind_speed_kmh=25, rain_24h_mm=0, params=STANDARD_PARAMS)
+    validations:
+      required: true
+  - type: input
+    id: reference
+    attributes:
+      label: Reference value (if any)
+      description: Which implementation or published table disagrees, and its value.
+      placeholder: "cffdrs 1.9.0 gives FWI = 10.0964"
+  - type: input
+    id: version
+    attributes:
+      label: fwi-chain and Python version
+      placeholder: "fwi-chain 1.0.0, Python 3.12.7"
