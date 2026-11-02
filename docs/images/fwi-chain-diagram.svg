@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1040 500" width="1040" height="500" font-family="system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif">
+  <title>The FWI chain: four noon readings feed three moisture codes, which feed two indices, which feed the Fire Weather Index</title>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#898781"/>
+    </marker>
+  </defs>
+  <rect x="0" y="0" width="1040" height="500" rx="16" fill="#fcfcfb"/>
+
+  <text x="30" y="40" font-size="20" font-weight="700" fill="#0b0b0b">One call to <tspan font-family="ui-monospace, 'SF Mono', Menlo, Consolas, monospace">advance()</tspan> = one day of the chain</text>
+
+  <!-- Inputs -->
+  <text x="30" y="86" font-size="12" font-weight="700" fill="#52514e" letter-spacing="1">NOON WEATHER</text>
+  <g font-size="14" fill="#0b0b0b">
+    <rect x="30" y="100" width="190" height="46" rx="8" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="46" y="128">Temperature <tspan fill="#898781">°C</tspan></text>
+    <rect x="30" y="156" width="190" height="46" rx="8" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="46" y="184">Relative humidity <tspan fill="#898781">%</tspan></text>
+    <rect x="30" y="212" width="190" height="46" rx="8" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="46" y="240">Wind at 10 m <tspan fill="#898781">km/h</tspan></text>
+    <rect x="30" y="268" width="190" height="46" rx="8" fill="#ffffff" stroke="#e1e0d9"/>
+    <text x="46" y="296">Rain, last 24 h <tspan fill="#898781">mm</tspan></text>
+    <rect x="30" y="334" width="190" height="46" rx="8" fill="#f0efec" stroke="#e1e0d9"/>
+    <text x="46" y="362" fill="#52514e">Month <tspan fill="#898781">(day length)</tspan></text>
+  </g>
+  <path d="M226,240 L282,240" stroke="#898781" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- The state -->
+  <rect x="290" y="66" width="290" height="352" rx="14" fill="#f9f9f7" stroke="#c3c2b7"/>
+  <text x="308" y="88" font-size="12" font-weight="700" fill="#52514e" letter-spacing="1">FwiState · THE MEMORY</text>
+
+  <g>
+    <rect x="308" y="100" width="254" height="92" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="308" y="100" width="6" height="92" rx="3" fill="#2a78d6"/>
+    <text x="328" y="128" font-size="18" font-weight="700" fill="#0b0b0b">FFMC</text>
+    <text x="392" y="128" font-size="13" fill="#52514e">Fine Fuel Moisture Code</text>
+    <text x="328" y="152" font-size="13" fill="#52514e">litter, needles, grass</text>
+    <text x="328" y="176" font-size="13" fill="#2a78d6" font-weight="600">remembers ~16 hours</text>
+
+    <rect x="308" y="204" width="254" height="92" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="308" y="204" width="6" height="92" rx="3" fill="#eb6834"/>
+    <text x="328" y="232" font-size="18" font-weight="700" fill="#0b0b0b">DMC</text>
+    <text x="378" y="232" font-size="13" fill="#52514e">Duff Moisture Code</text>
+    <text x="328" y="256" font-size="13" fill="#52514e">loose organic layer, 5–10 cm</text>
+    <text x="328" y="280" font-size="13" fill="#c6501f" font-weight="600">remembers ~12 days</text>
+
+    <rect x="308" y="308" width="254" height="92" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+    <rect x="308" y="308" width="6" height="92" rx="3" fill="#1baf7a"/>
+    <text x="328" y="336" font-size="18" font-weight="700" fill="#0b0b0b">DC</text>
+    <text x="362" y="336" font-size="13" fill="#52514e">Drought Code</text>
+    <text x="328" y="360" font-size="13" fill="#52514e">deep compact soil, 10–20 cm</text>
+    <text x="328" y="384" font-size="13" fill="#138a60" font-weight="600">remembers ~52 days</text>
+  </g>
+
+  <!-- Feedback loop -->
+  <path d="M520,420 C520,470 350,470 350,420" stroke="#898781" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="270" y="488" font-size="13" fill="#52514e">today's state becomes tomorrow's input: <tspan font-weight="700" fill="#0b0b0b">persist it</tspan></text>
+
+  <!-- Indices -->
+  <rect x="650" y="110" width="224" height="92" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+  <text x="668" y="138" font-size="18" font-weight="700" fill="#0b0b0b">ISI</text>
+  <text x="704" y="138" font-size="13" fill="#52514e">Initial Spread Index</text>
+  <text x="668" y="162" font-size="13" fill="#52514e">FFMC + wind</text>
+  <text x="668" y="186" font-size="13" fill="#0b0b0b" font-weight="600">how fast it would run</text>
+
+  <rect x="650" y="286" width="224" height="92" rx="10" fill="#ffffff" stroke="#e1e0d9"/>
+  <text x="668" y="314" font-size="18" font-weight="700" fill="#0b0b0b">BUI</text>
+  <text x="710" y="314" font-size="13" fill="#52514e">Buildup Index</text>
+  <text x="668" y="338" font-size="13" fill="#52514e">DMC + DC</text>
+  <text x="668" y="362" font-size="13" fill="#0b0b0b" font-weight="600">how much fuel would burn</text>
+
+  <path d="M562,146 L644,152" stroke="#898781" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <text x="603" y="138" font-size="12" fill="#52514e" text-anchor="middle">+ wind</text>
+  <path d="M562,250 C605,250 605,318 644,320" stroke="#898781" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M562,354 C605,354 605,344 644,342" stroke="#898781" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+
+  <!-- FWI -->
+  <rect x="904" y="182" width="120" height="124" rx="12" fill="#e34948"/>
+  <text x="964" y="232" font-size="30" font-weight="800" fill="#ffffff" text-anchor="middle">FWI</text>
+  <text x="964" y="258" font-size="13" fill="#ffffff" text-anchor="middle">Fire Weather</text>
+  <text x="964" y="276" font-size="13" fill="#ffffff" text-anchor="middle">Index</text>
+  <text x="964" y="330" font-size="12" fill="#52514e" text-anchor="middle">the number on</text>
+  <text x="964" y="346" font-size="12" fill="#52514e" text-anchor="middle">the danger map</text>
+
+  <path d="M874,156 C892,156 886,220 898,224" stroke="#898781" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+  <path d="M874,332 C892,332 886,268 898,264" stroke="#898781" stroke-width="2" fill="none" marker-end="url(#arrow)"/>
+</svg>

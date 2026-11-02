@@ -6,6 +6,15 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+### Added
+
+- Documentation: a plain-language guide to the FWI System, getting started, a
+  cookbook, an API reference, validation notes, an FAQ and a social media kit.
+- Six runnable, dependency-free examples in `examples/`, executed by the test
+  suite so they cannot drift from the code.
+- Figures computed by the library (`make figures`) and a diagram of the chain.
+- Issue and pull request templates; an expanded contributing guide.
+
 ## [1.0.0] - 2026-11-02
 
 ### Added

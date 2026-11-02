@@ -1,4 +1,4 @@
-.PHONY: check lint format typecheck test build
+.PHONY: check lint format typecheck test build figures
 
 check: lint typecheck test
 
@@ -18,3 +18,6 @@ test:
 
 build:
 	uv build
+
+figures:
+	uv run --with matplotlib python docs/scripts/make_figures.py
