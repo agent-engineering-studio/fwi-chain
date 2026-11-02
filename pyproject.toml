@@ -1,8 +1,9 @@
 [project]
-name = "package-name"
-version = "0.1.0"
-description = "PACKAGE_DESCRIPTION"
+name = "fwi-chain"
+version = "1.0.0"
+description = "Canadian Fire Weather Index chain (Van Wagner 1987): pure, typed, zero-dependency, verified against the reference day"
 readme = "README.md"
+keywords = ["fire weather index", "fwi", "wildfire", "van wagner", "cffdrs", "ffmc", "drought code"]
 requires-python = ">=3.12"
 license = "Apache-2.0"
 license-files = ["LICENSE"]
@@ -10,8 +11,9 @@ authors = [
     { name = "Giuseppe Zileni", email = "giuseppe.zileni@gmail.com" },
 ]
 classifiers = [
-    "Development Status :: 4 - Beta",
+    "Development Status :: 5 - Production/Stable",
     "Intended Audience :: Science/Research",
+    "Topic :: Scientific/Engineering :: Atmospheric Science",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.12",
@@ -21,9 +23,9 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Homepage = "https://github.com/agent-engineering-studio/package-name"
-Issues = "https://github.com/agent-engineering-studio/package-name/issues"
-Changelog = "https://github.com/agent-engineering-studio/package-name/blob/main/CHANGELOG.md"
+Homepage = "https://github.com/agent-engineering-studio/fwi-chain"
+Issues = "https://github.com/agent-engineering-studio/fwi-chain/issues"
+Changelog = "https://github.com/agent-engineering-studio/fwi-chain/blob/main/CHANGELOG.md"
 
 [build-system]
 requires = ["uv_build>=0.8,<0.13"]
@@ -46,6 +48,9 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "ARG", "PTH", "RUF"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["ARG", "B018"]
+# The docstrings mirror Van Wagner's equations (×, ·, −, °): the math is the point.
+"src/fwi_chain/chain.py" = ["RUF002", "RUF003"]
+"tests/**.py" = ["RUF002", "RUF003"]
 
 [tool.mypy]
 strict = true
@@ -59,7 +64,7 @@ testpaths = ["tests"]
 addopts = "--strict-markers"
 
 [tool.coverage.run]
-source = ["package_name"]
+source = ["fwi_chain"]
 
 [tool.coverage.report]
 fail_under = 90
