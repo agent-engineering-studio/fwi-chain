@@ -46,7 +46,7 @@ out = advance(
     params=STANDARD_PARAMS,
 )
 print(round(out.fwi, 2))  # 10.1
-state = out.state         # store it: tomorrow starts from here
+state = out.state  # store it: tomorrow starts from here
 ```
 
 The individual equations (`fine_fuel_moisture_code`, `duff_moisture_code`,
@@ -60,7 +60,9 @@ that latitude, or south of the equator, build your own `FwiParams`:
 from fwi_chain import FwiParams
 
 params = FwiParams(
-    ffmc_start=85.0, dmc_start=6.0, dc_start=15.0,
+    ffmc_start=85.0,
+    dmc_start=6.0,
+    dc_start=15.0,
     day_length_dmc=(...),  # 12 monthly factors, January first
     day_length_dc=(...),
 )
