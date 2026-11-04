@@ -47,7 +47,7 @@ local noon is the right input.
 
 The equations do. The **day-length tables** must match your latitude:
 `STANDARD_PARAMS` is for 46°N. Pass your own `FwiParams`, as in
-[example 05](../examples/05_southern_hemisphere.py).
+[example 05](https://github.com/agent-engineering-studio/fwi-chain/blob/main/examples/05_southern_hemisphere.py).
 
 ### Does it compute danger classes?
 
@@ -71,5 +71,5 @@ it computes wildfire danger for every ~9 km weather node in Italy.
 
 ### How can I help?
 
-See [CONTRIBUTING.md](../CONTRIBUTING.md). Reference vectors, latitude tables,
+See [CONTRIBUTING.md](https://github.com/agent-engineering-studio/fwi-chain/blob/main/CONTRIBUTING.md). Reference vectors, latitude tables,
 docs and translations are especially welcome.

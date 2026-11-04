@@ -47,7 +47,7 @@ CREATE TABLE fwi_state (
 );
 ```
 
-The full daily job is [`examples/03_daily_job_sqlite.py`](../examples/03_daily_job_sqlite.py).
+The full daily job is [`examples/03_daily_job_sqlite.py`](https://github.com/agent-engineering-studio/fwi-chain/blob/main/examples/03_daily_job_sqlite.py).
 
 **Redis / key-value cache**
 
@@ -136,7 +136,7 @@ for station_id, obs in todays_observations.items():
 save_states(states)
 ```
 
-See [`examples/04_many_stations.py`](../examples/04_many_stations.py).
+See [`examples/04_many_stations.py`](https://github.com/agent-engineering-studio/fwi-chain/blob/main/examples/04_many_stations.py).
 
 ---
 
@@ -316,4 +316,4 @@ for wind in range(0, 70, 10):
     print(wind, round(fire_weather_index(isi, 80.0), 1))
 ```
 
-See [`examples/06_individual_equations.py`](../examples/06_individual_equations.py).
+See [`examples/06_individual_equations.py`](https://github.com/agent-engineering-studio/fwi-chain/blob/main/examples/06_individual_equations.py).
