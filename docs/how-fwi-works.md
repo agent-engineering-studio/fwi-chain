@@ -149,7 +149,7 @@ for their region. EFFIS, for example, uses these for Europe:
 | Extreme | ≥ 50.0 |
 
 `fwi-chain` deliberately does **not** include classes. They are a regional,
-policy-level choice, and [example 02](../examples/02_fire_season.py) shows how
+policy-level choice, and [example 02](https://github.com/agent-engineering-studio/fwi-chain/blob/main/examples/02_fire_season.py) shows how
 to add your own in five lines.
 
 ![FWI through a fire season](images/fire-season.svg)
@@ -180,7 +180,7 @@ That is exactly the DC of the reference day in [Validation](validation.md).
 
 ## How the code maps to the science
 
-Every function in [`src/fwi_chain/chain.py`](../src/fwi_chain/chain.py) is
+Every function in [`src/fwi_chain/chain.py`](https://github.com/agent-engineering-studio/fwi-chain/blob/main/src/fwi_chain/chain.py) is
 annotated with the equation numbers of Van Wagner (1987):
 
 | Function | Equations | Inputs |

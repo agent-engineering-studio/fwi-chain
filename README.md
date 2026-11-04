@@ -56,7 +56,7 @@ weather readings at local noon**:
 From these it computes **six numbers**:
 
 <p align="center">
-  <img src="docs/images/fwi-chain-diagram.svg" alt="Diagram of the FWI chain: noon weather feeds FFMC, DMC and DC; FFMC plus wind gives ISI; DMC plus DC gives BUI; ISI and BUI give FWI" width="100%">
+  <img src="https://raw.githubusercontent.com/agent-engineering-studio/fwi-chain/main/docs/images/fwi-chain-diagram.svg" alt="Diagram of the FWI chain: noon weather feeds FFMC, DMC and DC; FFMC plus wind gives ISI; DMC plus DC gives BUI; ISI and BUI give FWI" width="100%">
 </p>
 
 | Code | Name | What it tracks | Memory |
@@ -73,7 +73,7 @@ on yesterday's, so the FWI is a *chain* that runs day after day through the
 fire season. `fwi-chain` makes that memory an explicit value (`FwiState`) that
 you store wherever you like.
 
-> New to fire weather? Read **[How the FWI works, in plain words](docs/how-fwi-works.md)**.
+> New to fire weather? Read **[How the FWI works, in plain words](https://agentengineering.it/fwi-chain/how-fwi-works/)**.
 
 ## Quick start
 
@@ -117,7 +117,7 @@ for day in noon_observations:  # your weather, one row per day, in order
 Each of the six equations is also exported on its own (`fine_fuel_moisture_code`,
 `duff_moisture_code`, `drought_code`, `initial_spread_index`, `buildup_index`,
 `fire_weather_index`), so you can ask what-if questions directly. See the
-[API reference](docs/api.md).
+[API reference](https://agentengineering.it/fwi-chain/api/).
 
 ## See it in action
 
@@ -127,19 +127,19 @@ Mediterranean season. Regenerate them with `make figures`.
 **A fire season, day by day.** Spring rain keeps the index low. Through the summer,
 drought builds up, and one windy September day pushes the FWI past 100.
 
-![FWI through a synthetic fire season with the rain below it](docs/images/fire-season.svg)
+![FWI through a synthetic fire season with the rain below it](https://raw.githubusercontent.com/agent-engineering-studio/fwi-chain/main/docs/images/fire-season.svg)
 
 **Three memories.** The same weather drives all three moisture codes, but they forget
 at very different speeds. FFMC jumps back within a day of rain. The Drought Code
 climbs slowly all summer and keeps its memory for weeks.
 
-![The three moisture codes over the season](docs/images/moisture-codes.svg)
+![The three moisture codes over the season](https://raw.githubusercontent.com/agent-engineering-studio/fwi-chain/main/docs/images/moisture-codes.svg)
 
 **Why the state matters.** Restart the chain on 1 July from the spring default codes
 and it underestimates the danger for weeks, because it has "forgotten" a dry
 spring. That is why `fwi-chain` hands you the state instead of hiding it.
 
-![A cold restart on 1 July compared with a chain that carried its state from April](docs/images/restart.svg)
+![A cold restart on 1 July compared with a chain that carried its state from April](https://raw.githubusercontent.com/agent-engineering-studio/fwi-chain/main/docs/images/restart.svg)
 
 ## Why fwi-chain
 
@@ -151,7 +151,7 @@ spring. That is why `fwi-chain` hands you the state instead of hiding it.
 - **Verified, not just tested.** The suite checks all six outputs of the reference day
   from the `cffdrs` test series to an absolute 1e-9. It also covers every rain branch,
   physical bounds under extreme weather, and the memory asymmetry between FFMC and DC.
-  See [Validation](docs/validation.md).
+  See [Validation](https://agentengineering.it/fwi-chain/validation/).
 - **Readable.** About 300 lines, with every line tied to an equation number in
   Van Wagner's report. It works as a reference implementation as well as a library.
 - **Typed.** Ships `py.typed` and passes `mypy --strict`. Frozen dataclasses, keyword-only
@@ -191,12 +191,12 @@ Days per danger class:
 
 | Guide | For whom |
 |---|---|
-| [How the FWI works](docs/how-fwi-works.md) | Everyone: the science in plain words, with pictures |
-| [Getting started](docs/getting-started.md) | Developers: from `pip install` to a daily job, plus common mistakes |
-| [Cookbook](docs/cookbook.md) | Recipes: pandas, CSV, SQLite, many stations, parallelism, units, HTTP service |
-| [API reference](docs/api.md) | Every public function and class |
-| [Validation](docs/validation.md) | How correctness is checked, and how to check it yourself |
-| [FAQ](docs/faq.md) | Short answers to common questions |
+| [How the FWI works](https://agentengineering.it/fwi-chain/how-fwi-works/) | Everyone: the science in plain words, with pictures |
+| [Getting started](https://agentengineering.it/fwi-chain/getting-started/) | Developers: from `pip install` to a daily job, plus common mistakes |
+| [Cookbook](https://agentengineering.it/fwi-chain/cookbook/) | Recipes: pandas, CSV, SQLite, many stations, parallelism, units, HTTP service |
+| [API reference](https://agentengineering.it/fwi-chain/api/) | Every public function and class |
+| [Validation](https://agentengineering.it/fwi-chain/validation/) | How correctness is checked, and how to check it yourself |
+| [FAQ](https://agentengineering.it/fwi-chain/faq/) | Short answers to common questions |
 
 ## Contributing
 

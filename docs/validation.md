@@ -7,7 +7,7 @@ a wrong coefficient. That is why the suite has two layers.
 
 ## 1. The reference day, to 1e-9
 
-[`tests/test_chain.py::test_published_reference_day`](../tests/test_chain.py) runs
+[`tests/test_chain.py::test_published_reference_day`](https://github.com/agent-engineering-studio/fwi-chain/blob/main/tests/test_chain.py) runs
 the first day of the test series that ships with
 [`cffdrs`](https://cran.r-project.org/package=cffdrs), the reference R
 implementation of Van Wagner's equations:

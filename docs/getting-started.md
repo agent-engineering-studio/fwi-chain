@@ -100,7 +100,7 @@ saved = json.dumps(dataclasses.asdict(out.state))  # '{"ffmc": 87.69..., "dmc": 
 state = FwiState(**json.loads(saved))  # tomorrow
 ```
 
-[Example 03](../examples/03_daily_job_sqlite.py) is a complete daily job backed by
+[Example 03](https://github.com/agent-engineering-studio/fwi-chain/blob/main/examples/03_daily_job_sqlite.py) is a complete daily job backed by
 SQLite. Run it a few times and watch it resume from where it left off.
 
 ## 5. Adapt the parameters to your region
@@ -128,7 +128,7 @@ SOUTH = FwiParams(
 
 Near the equator, or at high latitudes, use tables adjusted for your band. The
 `cffdrs` R package documents several. See
-[example 05](../examples/05_southern_hemisphere.py).
+[example 05](https://github.com/agent-engineering-studio/fwi-chain/blob/main/examples/05_southern_hemisphere.py).
 
 ## Common mistakes
 
