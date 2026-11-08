@@ -23,4 +23,4 @@ figures:
 	uv run --with matplotlib python docs/scripts/make_figures.py
 
 docs:
-	uv run --group docs mkdocs build --strict
+	uv run --group docs zensical build --strict
