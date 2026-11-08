@@ -10,6 +10,8 @@ All notable changes to this project are documented here. The format follows
 
 - Documentation: a plain-language guide to the FWI System, getting started, a
   cookbook, an API reference, validation notes, an FAQ and a social media kit.
+- A documentation site on GitHub Pages, built with [Zensical](https://zensical.org)
+  (`zensical.toml`, `make docs`).
 - Six runnable, dependency-free examples in `examples/`, executed by the test
   suite so they cannot drift from the code.
 - Figures computed by the library (`make figures`) and a diagram of the chain.

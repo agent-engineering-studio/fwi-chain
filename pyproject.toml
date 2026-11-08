@@ -40,8 +40,8 @@ dev = [
 ]
 
 docs = [
-    "mkdocs-material>=9.5",
     "mkdocstrings[python]>=0.26",
+    "zensical>=0.1.0",
 ]
 
 [tool.ruff]

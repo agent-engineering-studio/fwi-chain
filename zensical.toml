@@ -1,0 +1,90 @@
+# The documentation site, built with Zensical (https://zensical.org):
+#   uv run --group docs zensical serve
+[project]
+site_name = "fwi-chain"
+site_description = "The Canadian Fire Weather Index chain (Van Wagner 1987), pure Python, verified against the published reference to 1e-9"
+site_url = "https://agentengineering.it/fwi-chain/"
+repo_url = "https://github.com/agent-engineering-studio/fwi-chain"
+repo_name = "agent-engineering-studio/fwi-chain"
+edit_uri = "edit/main/docs/"
+copyright = "Code Apache-2.0."
+
+# docs/README.md is the map of these pages for GitHub browsing; on the site the
+# navigation below does that job.
+exclude_docs = """
+README.md
+scripts/
+"""
+
+nav = [
+  { "Home" = "index.md" },
+  { "Guide" = [
+    { "How the FWI works" = "how-fwi-works.md" },
+    { "Getting started" = "getting-started.md" },
+    { "Cookbook" = "cookbook.md" },
+    { "FAQ" = "faq.md" },
+  ] },
+  { "Reference" = [
+    { "API reference" = "api.md" },
+    { "Reference (generated)" = "reference.md" },
+    { "Validation" = "validation.md" },
+  ] },
+  { "Social media kit" = "social-kit.md" },
+  { "Changelog" = "changelog.md" },
+  { "Contributing" = "contributing.md" },
+]
+
+[project.theme]
+features = [
+  "navigation.sections",
+  "navigation.top",
+  "content.code.copy",
+  "search.highlight",
+]
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: light)"
+scheme = "default"
+primary = "red"
+toggle.icon = "material/weather-night"
+toggle.name = "Dark mode"
+
+[[project.theme.palette]]
+media = "(prefers-color-scheme: dark)"
+scheme = "slate"
+primary = "red"
+toggle.icon = "material/weather-sunny"
+toggle.name = "Light mode"
+
+[project.plugins.mkdocstrings.handlers.python]
+paths = ["src"]
+
+[project.plugins.mkdocstrings.handlers.python.options]
+show_root_heading = true
+show_source = false
+members_order = "source"
+separate_signature = true
+show_signature_annotations = true
+filters = ["!^_"]
+
+[project.markdown_extensions.admonition]
+[project.markdown_extensions.attr_list]
+[project.markdown_extensions.md_in_html]
+[project.markdown_extensions.tables]
+[project.markdown_extensions.toc]
+permalink = true
+[project.markdown_extensions."pymdownx.highlight"]
+[project.markdown_extensions."pymdownx.inlinehilite"]
+[project.markdown_extensions."pymdownx.snippets"]
+base_path = ["."]
+check_paths = true
+[project.markdown_extensions."pymdownx.superfences"]
+custom_fences = [
+  { name = "mermaid", class = "mermaid", format = "pymdownx.superfences.fence_code_format" },
+]
+
+# The README is written for GitHub: its relative links (LICENSE) point at the
+# repository, not at the site.
+[project.validation.links]
+not_found = "info"
+unrecognized_links = "info"
