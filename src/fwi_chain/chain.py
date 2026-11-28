@@ -24,6 +24,15 @@ deployment may legitimately choose (initial codes, day-length tables), and
 that is what :class:`FwiParams` carries. :data:`STANDARD_PARAMS` holds the
 published defaults.
 
+One choice is about the constants after all. The 1987 report and the FORTRAN
+program of Van Wagner & Pickett (1985) print two of them differently: the
+FFMC scale (147.2 in Eq. 1 and 10, and in the ISI; 147.27723 in the program) and the DMC
+wetting (``exp(5.6348 - P/43.43)`` in Eq. 12, ``280 / exp(0.023 P)`` in the
+program). The report is the default. ``FwiParams.constants = "cffdrs"``, or
+:data:`CFFDRS_PARAMS`, takes the program's, which the cffdrs R package
+follows: over its 48-day test series the six codes then agree with cffdrs to
+0.006, against 0.25 FWI points with the report's.
+
 Reference: Van Wagner, C.E. (1987), *Development and structure of the
 Canadian Forest Fire Weather Index System*, Forestry Technical Report 35.
 Equation numbers in the comments are that report's.
@@ -32,10 +41,13 @@ Equation numbers in the comments are that report's.
 from __future__ import annotations
 
 import math
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
+from typing import Literal, get_args
 
 __all__ = [
+    "CFFDRS_PARAMS",
     "STANDARD_PARAMS",
+    "Constants",
     "FwiOutputs",
     "FwiParams",
     "FwiState",
@@ -68,6 +80,13 @@ class FwiOutputs:
     fwi: float
 
 
+Constants = Literal["1987", "cffdrs"]
+"""Which printing of the two constants: the 1987 report, or the 1985 program cffdrs follows."""
+
+#: The FFMC scale: Eq. 1 and 10 of the report, and the program's 250 * 59.5 / 101.
+_FFMC_SCALE = {"1987": 147.2, "cffdrs": 147.27723}
+
+
 @dataclass(frozen=True, slots=True)
 class FwiParams:
     """What a deployment may choose, as opposed to what Van Wagner fixed.
@@ -76,6 +95,11 @@ class FwiParams:
     (January first) for the latitude band in use. Van Wagner tabulates them
     for 46°N; a deployment far from that latitude, or in the southern
     hemisphere, passes its own tables.
+
+    ``constants`` is the printing of the FFMC scale and of the DMC wetting:
+    ``"1987"`` (the report, the default) or ``"cffdrs"`` (the 1985 program).
+    A chain is walked with one of them from start to end: a stored state
+    carries the digits of the printing that made it.
     """
 
     ffmc_start: float
@@ -83,8 +107,11 @@ class FwiParams:
     dc_start: float
     day_length_dmc: tuple[float, ...]
     day_length_dc: tuple[float, ...]
+    constants: Constants = "1987"
 
     def __post_init__(self) -> None:
+        if self.constants not in get_args(Constants):
+            raise ValueError(f"constants must be '1987' or 'cffdrs', got {self.constants!r}")
         for name, table in (
             ("day_length_dmc", self.day_length_dmc),
             ("day_length_dc", self.day_length_dc),
@@ -105,12 +132,17 @@ STANDARD_PARAMS = FwiParams(
     day_length_dc=(-1.6, -1.6, -1.6, 0.9, 3.8, 5.8, 6.4, 5.0, 2.4, 0.4, -1.6, -1.6),
 )
 """Van Wagner's spring start-up codes (§4) and day-length factors for 46°N
-(Tables 2 and 3, January first)."""
+(Tables 2 and 3, January first), with the constants of the 1987 report."""
+
+CFFDRS_PARAMS = replace(STANDARD_PARAMS, constants="cffdrs")
+""":data:`STANDARD_PARAMS` with the constants of the 1985 program, as the cffdrs
+R package uses them. Opt in to match cffdrs's digits; the default does not
+change."""
 
 
-def _ffmc_to_moisture(ffmc: float) -> float:
+def _ffmc_to_moisture(ffmc: float, scale: float = 147.2) -> float:
     """Eq. 1 inverted: the FFMC scale back to % moisture content."""
-    return 147.2 * (101.0 - ffmc) / (59.5 + ffmc)
+    return scale * (101.0 - ffmc) / (59.5 + ffmc)
 
 
 def fine_fuel_moisture_code(
@@ -120,11 +152,17 @@ def fine_fuel_moisture_code(
     relative_humidity_pct: float,
     wind_speed_kmh: float,
     rain_24h_mm: float,
+    constants: Constants = "1987",
 ) -> float:
-    """Eqs. 1-10. Fine fuel moisture on the 0-101 FFMC scale."""
+    """Eqs. 1-10. Fine fuel moisture on the 0-101 FFMC scale.
+
+    ``constants="cffdrs"`` uses the program's 147.27723 for the report's 147.2,
+    here and in :func:`initial_spread_index`.
+    """
     h = min(max(relative_humidity_pct, 0.0), 100.0)
     w = max(wind_speed_kmh, 0.0)
-    mo = _ffmc_to_moisture(previous)
+    scale = _FFMC_SCALE[constants]
+    mo = _ffmc_to_moisture(previous, scale)
 
     if rain_24h_mm > 0.5:  # Eq. 2 — the 0.5 mm is canopy interception.
         rf = rain_24h_mm - 0.5
@@ -166,7 +204,7 @@ def fine_fuel_moisture_code(
             # hysteresis band, not a missing branch.
             m = mo
 
-    ffmc = 59.5 * (250.0 - m) / (147.2 + m)  # Eq. 10
+    ffmc = 59.5 * (250.0 - m) / (scale + m)  # Eq. 10
     # float(): `x ** y` on two floats is Any to mypy (the result may be complex).
     return float(min(max(ffmc, 0.0), 101.0))
 
@@ -178,8 +216,13 @@ def duff_moisture_code(
     relative_humidity_pct: float,
     rain_24h_mm: float,
     day_length: float,
+    constants: Constants = "1987",
 ) -> float:
-    """Eqs. 11-17. Moisture of loosely compacted organic layers."""
+    """Eqs. 11-17. Moisture of loosely compacted organic layers.
+
+    ``constants="cffdrs"`` writes Eq. 12 as the program does,
+    ``280 / exp(0.023 P)``, for the report's ``exp(5.6348 - P / 43.43)``.
+    """
     h = min(max(relative_humidity_pct, 0.0), 100.0)
     # Eq. 16 — below -1.1 °C drying stops; the clamp *is* the equation.
     t = max(temperature_c, -1.1)
@@ -189,7 +232,10 @@ def duff_moisture_code(
         return max(previous + rk, 0.0)
 
     re = 0.92 * rain_24h_mm - 1.27  # Eq. 11
-    mo = 20.0 + math.exp(5.6348 - previous / 43.43)  # Eq. 12
+    if constants == "cffdrs":
+        mo = 20.0 + 280.0 / math.exp(0.023 * previous)  # Eq. 12, as the 1985 program
+    else:
+        mo = 20.0 + math.exp(5.6348 - previous / 43.43)  # Eq. 12
     if previous <= 33.0:  # Eq. 13 a/b/c — slope of the wetting curve.
         b = 100.0 / (0.5 + 0.3 * previous)
     elif previous <= 65.0:
@@ -222,9 +268,15 @@ def drought_code(
     return max(dr + pe, 0.0)
 
 
-def initial_spread_index(ffmc: float, *, wind_speed_kmh: float) -> float:
-    """Eqs. 24-26. Expected rate of spread — where wind enters the chain."""
-    m = _ffmc_to_moisture(ffmc)
+def initial_spread_index(
+    ffmc: float, *, wind_speed_kmh: float, constants: Constants = "1987"
+) -> float:
+    """Eqs. 24-26. Expected rate of spread — where wind enters the chain.
+
+    The FFMC goes back to moisture on the scale of ``constants``, as in
+    :func:`fine_fuel_moisture_code`.
+    """
+    m = _ffmc_to_moisture(ffmc, _FFMC_SCALE[constants])
     f_wind = math.exp(0.05039 * max(wind_speed_kmh, 0.0))  # Eq. 24
     f_fine = 91.9 * math.exp(-0.1386 * m) * (1.0 + m**5.31 / 4.93e7)  # Eq. 25
     return float(0.208 * f_wind * f_fine)  # Eq. 26
@@ -276,6 +328,7 @@ def advance(
         relative_humidity_pct=relative_humidity_pct,
         wind_speed_kmh=wind_speed_kmh,
         rain_24h_mm=rain_24h_mm,
+        constants=params.constants,
     )
     dmc = duff_moisture_code(
         state.dmc,
@@ -283,6 +336,7 @@ def advance(
         relative_humidity_pct=relative_humidity_pct,
         rain_24h_mm=rain_24h_mm,
         day_length=params.day_length_dmc[idx],
+        constants=params.constants,
     )
     dc = drought_code(
         state.dc,
@@ -290,7 +344,7 @@ def advance(
         rain_24h_mm=rain_24h_mm,
         day_length=params.day_length_dc[idx],
     )
-    isi = initial_spread_index(ffmc, wind_speed_kmh=wind_speed_kmh)
+    isi = initial_spread_index(ffmc, wind_speed_kmh=wind_speed_kmh, constants=params.constants)
     bui = buildup_index(dmc, dc)
     return FwiOutputs(
         state=FwiState(ffmc=ffmc, dmc=dmc, dc=dc),

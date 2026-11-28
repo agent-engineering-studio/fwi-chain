@@ -8,7 +8,7 @@ Both are computed by the library on the 48 days of the cffdrs test series
 
 from __future__ import annotations
 
-import csv
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -21,14 +21,16 @@ from fwi_chain import (
     EFFIS_FWI_CLASSES,
     STANDARD_PARAMS,
     ChainDay,
-    NoonObservation,
     explain_change,
     walk_chain,
 )
 
 ROOT = Path(__file__).resolve().parent.parent.parent
 OUT = ROOT / "docs" / "images" / "blog"
-SERIES = ROOT / "benchmarks" / "cffdrs"
+# The cffdrs series is downloaded and checked, not committed (GPL-2).
+sys.path.insert(0, str(ROOT))
+from benchmarks import cffdrs_data  # noqa: E402
+
 COLOURS = ["#7bc67b", "#f2e25a", "#f5a742", "#e8552d", "#a8281e", "#5c1a4a"]
 
 TEXT = {
@@ -71,16 +73,8 @@ UNITS = {"wind": "km/h", "humidity": "%", "temperature": "°C", "rain": "mm"}
 
 
 def series() -> tuple[list[ChainDay], list[float]]:
-    with (SERIES / "test_fwi.csv").open(encoding="utf-8") as f:
-        rows = list(csv.DictReader(f, delimiter=";"))
-    with (SERIES / "fwi_01.csv").open(encoding="utf-8") as f:
-        theirs = [float(r["FWI"]) for r in csv.DictReader(f)]
-    observations = {
-        date(int(r["yr"]), int(r["mon"]), int(r["day"])): NoonObservation(
-            float(r["temp"]), float(r["rh"]), float(r["ws"]), float(r["prec"])
-        )
-        for r in rows
-    }
+    observations = cffdrs_data.observations()
+    theirs = [e["fwi"] for e in cffdrs_data.expected()]
     walked = walk_chain(
         observations, sorted(observations), start=None, params=STANDARD_PARAMS, max_gap_days=7
     )

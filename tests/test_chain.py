@@ -18,6 +18,7 @@ import pytest
 
 import fwi_chain
 from fwi_chain import (
+    CFFDRS_PARAMS,
     STANDARD_PARAMS,
     FwiParams,
     FwiState,
@@ -66,6 +67,60 @@ def test_published_reference_day() -> None:
     assert out.isi == pytest.approx(10.853661073312, abs=1e-9)
     assert out.bui == pytest.approx(8.4904265358371, abs=1e-9)
     assert out.fwi == pytest.approx(10.096371392382, abs=1e-9)
+
+
+def test_the_cffdrs_constants_give_the_digits_of_cffdrs() -> None:
+    """The same day with ``constants="cffdrs"``: cffdrs gives FFMC 87.65, ISI
+    10.78 and FWI 10.04, to two decimals. Only the FFMC scale and the DMC
+    wetting change, so the DMC of a dry day, the DC and the BUI do not move.
+    """
+
+    def first_day(params: FwiParams) -> fwi_chain.FwiOutputs:
+        return advance(
+            params.initial_state,
+            month=4,
+            temperature_c=17.0,
+            relative_humidity_pct=42.0,
+            wind_speed_kmh=25.0,
+            rain_24h_mm=0.0,
+            params=params,
+        )
+
+    report = first_day(STANDARD_PARAMS)
+    program = first_day(CFFDRS_PARAMS)
+    assert program.state.ffmc == pytest.approx(87.65, abs=0.005)
+    assert program.isi == pytest.approx(10.78, abs=0.005)
+    assert program.fwi == pytest.approx(10.04, abs=0.005)
+    assert program.state.dmc == report.state.dmc
+    assert program.state.dc == report.state.dc
+    assert program.bui == report.bui
+
+
+def test_the_report_is_the_default_and_the_choice_is_checked() -> None:
+    assert STANDARD_PARAMS.constants == "1987"
+    assert CFFDRS_PARAMS.constants == "cffdrs"
+    assert CFFDRS_PARAMS.initial_state == STANDARD_PARAMS.initial_state
+    assert CFFDRS_PARAMS.day_length_dmc == STANDARD_PARAMS.day_length_dmc
+    with pytest.raises(ValueError, match="constants"):
+        FwiParams(85.0, 6.0, 15.0, PARAMS.day_length_dmc, PARAMS.day_length_dc, "1985")  # type: ignore[arg-type]
+
+
+def test_the_cffdrs_dmc_wets_by_the_program() -> None:
+    """Eq. 12 as the program writes it: 280 / exp(0.023 P) for exp(5.6348 - P / 43.43)."""
+
+    def dmc(rain_mm: float, constants: fwi_chain.Constants) -> float:
+        return duff_moisture_code(
+            40.0,
+            temperature_c=15.0,
+            relative_humidity_pct=80.0,
+            rain_24h_mm=rain_mm,
+            day_length=12.8,
+            constants=constants,
+        )
+
+    assert dmc(10.0, "cffdrs") != dmc(10.0, "1987")
+    assert dmc(10.0, "cffdrs") == pytest.approx(dmc(10.0, "1987"), abs=0.5)
+    assert dmc(0.0, "cffdrs") == dmc(0.0, "1987")  # a dry day never reaches Eq. 12
 
 
 def test_standard_params_are_van_wagners() -> None:

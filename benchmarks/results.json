@@ -27,6 +27,34 @@
     "outcome": "pass",
     "got": "48 of 48 days"
   },
+  "cffdrs-48-days-cffdrs-constants · FFMC within 0.007 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.005 over 48 days"
+  },
+  "cffdrs-48-days-cffdrs-constants · DMC within 0.007 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.006 over 48 days"
+  },
+  "cffdrs-48-days-cffdrs-constants · DC within 0.007 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.005 over 48 days"
+  },
+  "cffdrs-48-days-cffdrs-constants · ISI within 0.007 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.005 over 48 days"
+  },
+  "cffdrs-48-days-cffdrs-constants · BUI within 0.007 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.006 over 48 days"
+  },
+  "cffdrs-48-days-cffdrs-constants · FWI within 0.007 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.005 over 48 days"
+  },
+  "cffdrs-48-days-cffdrs-constants · same EFFIS class as cffdrs, every day": {
+    "outcome": "pass",
+    "got": "48 of 48 days"
+  },
   "first-day-by-hand · DC = 19.014": {
     "outcome": "pass",
     "got": "19.014000"

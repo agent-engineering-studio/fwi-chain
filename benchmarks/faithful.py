@@ -3,6 +3,10 @@
     uv run python -m benchmarks.faithful            # the table
     uv run python -m benchmarks.faithful --check    # CI: the hand answers score as written
 
+The facts are those of the cffdrs test series, which is downloaded (see
+:mod:`benchmarks.cffdrs_data`). With no network the set is **skipped**, not
+passed; ``--require-download`` makes that a failure.
+
 **The set** (``faithful.json``): questions, the tool that answers each, and
 answers written by hand, one faithful and one with known faults. The facts are
 computed by the library when the set runs, so a change in a number shows here.
@@ -24,6 +28,7 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from benchmarks import cffdrs_data
 from benchmarks.run import cffdrs_series
 from fwi_chain import STANDARD_PARAMS
 from fwi_chain.check import check_text
@@ -36,7 +41,7 @@ def facts(case: dict[str, Any]) -> dict[str, Any]:
     series = next(
         c
         for c in tomllib.loads((HERE / "cases.toml").read_text(encoding="utf-8"))["case"]
-        if c["kind"] == "against-cffdrs"
+        if c["id"] == "cffdrs-48-days"
     )
     walked, _ = cffdrs_series(series)
     args = case["args"]
@@ -62,8 +67,18 @@ def facts(case: dict[str, Any]) -> dict[str, Any]:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     parser.add_argument("--check", action="store_true", help="fail if a hand answer scores wrong")
+    parser.add_argument(
+        "--require-download",
+        action="store_true",
+        help="fail, instead of skipping, when the cffdrs series cannot be downloaded",
+    )
     args = parser.parse_args(argv)
     cases = json.loads((HERE / "faithful.json").read_text(encoding="utf-8"))["cases"]
+    try:
+        cffdrs_data.observations()
+    except cffdrs_data.Unavailable as e:
+        print(f"SKIPPED, not passed: {len(cases)} questions, the series is not here. {e}")
+        return 1 if args.require_download else 0
     wrong = 0
     total = 0
     for case in cases:

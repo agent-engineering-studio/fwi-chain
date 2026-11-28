@@ -90,7 +90,8 @@ Un giorno che manca si lascia vuoto: non si scrive mai 0. Una pioggia a zero
 La libreria è confrontata a ogni modifica con i 48 giorni della serie di
 prova di `cffdrs`, l'implementazione di riferimento in R: al massimo 0,25
 punti di FWI di differenza, la stessa classe tutti i 48 giorni. La differenza
-ha una causa nota. I dettagli sono nel [benchmark](benchmark.md).
+ha una causa nota: due costanti stampate in modo diverso nel 1985 e nel 1987.
+Con `CFFDRS_PARAMS`, le costanti del 1985, la differenza scende a 0,006. I dettagli sono nel [benchmark](benchmark.md).
 
 ## Per chi sviluppa
 

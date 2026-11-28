@@ -3,16 +3,21 @@
     uv run python -m benchmarks.run            # the table
     uv run python -m benchmarks.run --check    # CI: fail if an outcome or a measure changed
     uv run python -m benchmarks.run --write    # save them in results.json
+    uv run python -m benchmarks.run --check --require-download   # CI
 
 ``--check`` fails when an outcome, or a measured difference, is not the one
 in ``results.json``: a change to the code or to a case is seen, and saved on
 purpose.
+
+The comparison with cffdrs downloads its test series (see
+:mod:`benchmarks.cffdrs_data`). With no network those cases are reported as
+**skipped**, never as passed; ``--require-download`` turns a skip into a
+failure, and CI runs with it.
 """
 
 from __future__ import annotations
 
 import argparse
-import csv
 import json
 import sys
 import tomllib
@@ -21,10 +26,13 @@ from datetime import date, timedelta
 from pathlib import Path
 from typing import Any, Literal
 
+from benchmarks import cffdrs_data
 from fwi_chain import (
+    CFFDRS_PARAMS,
     STANDARD_PARAMS,
     ChainDay,
     ChainPoint,
+    FwiParams,
     FwiState,
     NoonObservation,
     advance,
@@ -37,7 +45,9 @@ HERE = Path(__file__).parent
 RESULTS = HERE / "results.json"
 CODES = ("ffmc", "dmc", "dc", "isi", "bui", "fwi")
 
-Outcome = Literal["pass", "fail"]
+Outcome = Literal["pass", "fail", "skipped"]
+
+PARAMS: dict[str, FwiParams] = {"1987": STANDARD_PARAMS, "cffdrs": CFFDRS_PARAMS}
 
 
 @dataclass(frozen=True, slots=True)
@@ -61,25 +71,27 @@ def codes_of(day: ChainDay) -> dict[str, float]:
 
 
 def cffdrs_series(case: dict[str, Any]) -> tuple[list[ChainDay], list[dict[str, float]]]:
-    """The chain over the inputs, and what cffdrs gives for the same days."""
-    with (HERE / case["inputs"]).open(encoding="utf-8") as f:
-        inputs = list(csv.DictReader(f, delimiter=";"))
-    with (HERE / case["expected"]).open(encoding="utf-8") as f:
-        expected = [{c: float(r[c.upper()]) for c in CODES} for r in csv.DictReader(f)]
-    observations = {
-        date(int(r["yr"]), int(r["mon"]), int(r["day"])): NoonObservation(
-            float(r["temp"]), float(r["rh"]), float(r["ws"]), float(r["prec"])
-        )
-        for r in inputs
-    }
+    """The chain over the inputs, and what cffdrs gives for the same days.
+
+    Raises :class:`benchmarks.cffdrs_data.Unavailable` when the series cannot
+    be downloaded.
+    """
+    observations = cffdrs_data.observations()
     walked = walk_chain(
-        observations, sorted(observations), start=None, params=STANDARD_PARAMS, max_gap_days=7
+        observations,
+        sorted(observations),
+        start=None,
+        params=PARAMS[case.get("constants", "1987")],
+        max_gap_days=7,
     )
-    return walked, expected
+    return walked, cffdrs_data.expected()
 
 
 def against_cffdrs(case: dict[str, Any]) -> list[Result]:
-    walked, expected = cffdrs_series(case)
+    try:
+        walked, expected = cffdrs_series(case)
+    except cffdrs_data.Unavailable as e:
+        return [Result(case["id"], "the series of cffdrs 1.10.0", "skipped", str(e))]
     out = []
     for code in CODES:
         worst = max(abs(codes_of(d)[code] - e[code]) for d, e in zip(walked, expected, strict=True))
@@ -207,29 +219,52 @@ def run() -> list[Result]:
 
 def report(results: list[Result]) -> str:
     passed = sum(r.outcome == "pass" for r in results)
-    lines = [f"fwi-chain: {passed} of {len(results)} checks"]
+    skipped = sum(r.outcome == "skipped" for r in results)
+    head = f"fwi-chain: {passed} of {len(results)} checks"
+    lines = [head + (f", {skipped} SKIPPED (not passed)" if skipped else "")]
     for r in results:
-        mark = "✓" if r.outcome == "pass" else "✗"
+        mark = {"pass": "✓", "fail": "✗", "skipped": "-"}[r.outcome]
         lines.append(f"  {mark} {r.case:<34} {r.check:<46} {r.got}")
     return "\n".join(lines)
 
 
 def saved(results: list[Result]) -> dict[str, dict[str, str]]:
-    return {f"{r.case} · {r.check}": {"outcome": r.outcome, "got": r.got} for r in results}
+    return {
+        f"{r.case} · {r.check}": {"outcome": r.outcome, "got": r.got}
+        for r in results
+        if r.outcome != "skipped"
+    }
 
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=(__doc__ or "").splitlines()[0])
     parser.add_argument("--check", action="store_true", help="fail if results differ")
     parser.add_argument("--write", action="store_true", help="save results to results.json")
+    parser.add_argument(
+        "--require-download",
+        action="store_true",
+        help="fail, instead of skipping, when the cffdrs series cannot be downloaded",
+    )
     args = parser.parse_args(argv)
     results = run()
     print(report(results))
+    skipped = {r.case for r in results if r.outcome == "skipped"}
+    if skipped:
+        print(
+            "\nSKIPPED, not passed: the cffdrs series could not be downloaded "
+            f"({', '.join(sorted(skipped))}). Run again with the network."
+        )
+        if args.require_download or args.write:
+            return 1
     now = saved(results)
     if args.write:
         RESULTS.write_text(json.dumps(now, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     if args.check:
-        before = json.loads(RESULTS.read_text(encoding="utf-8"))
+        before = {
+            k: v
+            for k, v in json.loads(RESULTS.read_text(encoding="utf-8")).items()
+            if k.split(" · ", 1)[0] not in skipped
+        }
         if before != now:
             changed = sorted(
                 f"{k}: {before.get(k)} -> {v}" for k, v in now.items() if before.get(k) != v

@@ -151,7 +151,8 @@ spring. That is why `fwi-chain` hands you the state instead of hiding it.
 - **Measured, not just tested.** A benchmark in CI walks the 48-day test series of
   `cffdrs` and compares the six codes with cffdrs's own output: at most 0.25 FWI points
   apart, the same EFFIS class on all 48 days. The difference has a known cause (two
-  constants printed differently in 1985 and 1987). The suite also covers every rain
+  constants printed differently in 1985 and 1987); `CFFDRS_PARAMS` takes the 1985 ones
+  and matches cffdrs to 0.006. The suite also covers every rain
   branch, physical bounds under extreme weather, and the memory of the codes.
   See [Validation](https://agentengineering.it/fwi-chain/validation/).
 - **Readable.** About 300 lines, with every line tied to an equation number in

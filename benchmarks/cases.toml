@@ -1,8 +1,11 @@
 # Known cases for fwi-chain, with the answer we expect and where it comes from.
 #
-#   kind = "against-cffdrs"   the chain walked over a series, against what the
-#                             cffdrs R package gives for the same days.
-#                             `tolerance`: the largest difference allowed, per code.
+#   kind = "against-cffdrs"   the chain walked over the test series of cffdrs,
+#                             against what the cffdrs R package gives for the
+#                             same days. `constants`: "1987" (the default) or
+#                             "cffdrs". `tolerance`: the largest difference
+#                             allowed, per code. The series is downloaded and
+#                             checked by SHA-256 (benchmarks/cffdrs_data.py).
 #   kind = "day"              one day from a state: the codes we expect.
 #   kind = "rain-threshold"   rain at `at_mm` leaves `code` as a dry day does;
 #                             rain at `above_mm` lowers it.
@@ -19,17 +22,26 @@
 # The tolerances are not zero, and that is the finding. cffdrs follows the
 # FORTRAN program of Van Wagner & Pickett (1985): 147.27723 in the FFMC scale
 # where the 1987 report (Eq. 1) prints 147.2, and 0.023 where Eq. 12 has
-# 1/43.43. This library follows the report. See benchmarks/README.md.
+# 1/43.43. This library follows the report by default; CFFDRS_PARAMS takes the
+# program's constants. See benchmarks/README.md.
 
 [[case]]
 id = "cffdrs-48-days"
 title = "The test series of cffdrs, 13 April to 30 May 1985, from the standard codes"
 status = "published"
 kind = "against-cffdrs"
-inputs = "cffdrs/test_fwi.csv"
-expected = "cffdrs/fwi_01.csv"
+constants = "1987"
 source = "cffdrs 1.10.0 (cffdrs_r at 4d20a303bf): data/test_fwi.csv and tests/testthat/data/fwi_01.csv, the output of fwi(test_fwi)"
 tolerance = { ffmc = 0.15, dmc = 0.10, dc = 0.01, isi = 0.30, bui = 0.10, fwi = 0.30 }
+
+[[case]]
+id = "cffdrs-48-days-cffdrs-constants"
+title = "The same 48 days with constants = \"cffdrs\": the digits of cffdrs"
+status = "published"
+kind = "against-cffdrs"
+constants = "cffdrs"
+source = "As cffdrs-48-days. cffdrs prints two decimals (three for the DMC), so 0.005 is its rounding"
+tolerance = { ffmc = 0.007, dmc = 0.007, dc = 0.007, isi = 0.007, bui = 0.007, fwi = 0.007 }
 
 # --- single days ---------------------------------------------------------------
 

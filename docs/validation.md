@@ -27,7 +27,13 @@ The numbers are close, not equal, and the reason is known. This library
 follows the equations as printed in Van Wagner (1987): 147.2 in the FFMC scale
 (Eq. 1), 1/43.43 in the DMC (Eq. 12). cffdrs follows the FORTRAN program of
 1985, which has 147.27723 and 0.023. With those two constants all six codes
-agree with cffdrs to 0.006.
+agree with cffdrs to 0.006: since 1.4.0 they are an option,
+`FwiParams.constants="cffdrs"` or `CFFDRS_PARAMS`, measured in the benchmark
+next to the default. The default stays the report, so no stored chain moves.
+
+The two files of the cffdrs series are not in this repository (cffdrs is
+GPL-2): the benchmark downloads them at a fixed commit and checks their
+SHA-256. See [the benchmark](benchmark.md).
 
 !!! note "A correction"
     Up to 1.1.0 these pages said the library was "verified against the cffdrs

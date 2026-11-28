@@ -25,7 +25,7 @@ from typing import Any
 from mcp.server.mcpserver import MCPServer
 from mcp.server.mcpserver.exceptions import ToolError
 
-from fwi_chain.chain import STANDARD_PARAMS, FwiParams, FwiState
+from fwi_chain.chain import CFFDRS_PARAMS, STANDARD_PARAMS, Constants, FwiParams, FwiState
 from fwi_chain.check import check_text
 from fwi_chain.facts import RULE, day_facts, distribution_facts, walk_facts
 from fwi_chain.walk import ChainDay, ChainPoint, NoonObservation, walk_chain
@@ -59,15 +59,16 @@ Rules for every answer:
 Row = tuple[str, float | None, float | None, float | None, float | None]
 
 
-def _params(start_codes: dict[str, float] | None) -> FwiParams:
+def _params(start_codes: dict[str, float] | None, constants: Constants = "1987") -> FwiParams:
     if not start_codes:
-        return STANDARD_PARAMS
+        return CFFDRS_PARAMS if constants == "cffdrs" else STANDARD_PARAMS
     return FwiParams(
         ffmc_start=float(start_codes.get("ffmc", STANDARD_PARAMS.ffmc_start)),
         dmc_start=float(start_codes.get("dmc", STANDARD_PARAMS.dmc_start)),
         dc_start=float(start_codes.get("dc", STANDARD_PARAMS.dc_start)),
         day_length_dmc=STANDARD_PARAMS.day_length_dmc,
         day_length_dc=STANDARD_PARAMS.day_length_dc,
+        constants=constants,
     )
 
 
@@ -76,6 +77,7 @@ def _walk(
     resume: dict[str, Any] | None,
     start_codes: dict[str, float] | None,
     max_gap_days: int,
+    constants: Constants = "1987",
 ) -> tuple[list[ChainDay], FwiParams]:
     observations: dict[date, NoonObservation] = {}
     for row in readings:
@@ -94,7 +96,7 @@ def _walk(
             ),
             chain_days=int(resume.get("chain_days", 0)),
         )
-    params = _params(start_codes)
+    params = _params(start_codes, constants)
     walked = walk_chain(
         observations, sorted(observations), start=start, params=params, max_gap_days=max_gap_days
     )
@@ -121,6 +123,7 @@ def create_server(**options: Any) -> MCPServer[Any]:
         start_codes: dict[str, float] | None = None,
         max_gap_days: int = 7,
         spinup_days: int | None = None,
+        constants: Constants = "1987",
     ) -> dict[str, Any]:
         """The chain over a stretch of days, from the noon readings given.
 
@@ -130,10 +133,13 @@ def create_server(**options: Any) -> MCPServer[Any]:
         and is skipped (never write 0 for it). ``resume``: the stored point to
         continue from, ``{day, ffmc, dmc, dc, chain_days}``; without it the
         chain starts from the standard codes (85 / 6 / 15, or ``start_codes``).
-        Answers every day's codes and class, the peak, the rain, and the last
-        day with what moved it.
+        ``constants``: ``"1987"`` (the report, the default) or ``"cffdrs"``
+        (the 1985 program, to match the cffdrs R package). Answers every day's
+        codes and class, the peak, the rain, and the last day with what moved it.
         """
-        return _guard(lambda: _walk_facts(readings, resume, start_codes, max_gap_days, spinup_days))
+        return _guard(
+            lambda: _walk_facts(readings, resume, start_codes, max_gap_days, spinup_days, constants)
+        )
 
     @server.tool()
     def explain(
@@ -143,10 +149,11 @@ def create_server(**options: Any) -> MCPServer[Any]:
         start_codes: dict[str, float] | None = None,
         max_gap_days: int = 7,
         month_values: list[float] | None = None,
+        constants: Constants = "1987",
     ) -> dict[str, Any]:
         """One day of a walked stretch, and what moved its FWI from the day before.
 
-        ``readings``, ``resume`` and ``start_codes`` as in ``walk``; ``day``
+        ``readings``, ``resume``, ``start_codes`` and ``constants`` as in ``walk``; ``day``
         is the day to explain, which must have readings. ``month_values``:
         past FWI values of this place in the same month, to say where the day
         falls among them (its percentile). Answers the readings, the six
@@ -155,7 +162,7 @@ def create_server(**options: Any) -> MCPServer[Any]:
         """
 
         def facts() -> dict[str, Any]:
-            walked, params = _walk(readings, resume, start_codes, max_gap_days)
+            walked, params = _walk(readings, resume, start_codes, max_gap_days, constants)
             wanted = date.fromisoformat(day)
             at = next((i for i, d in enumerate(walked) if d.day == wanted), None)
             if at is None:
@@ -204,8 +211,9 @@ def _walk_facts(
     start_codes: dict[str, float] | None,
     max_gap_days: int,
     spinup_days: int | None,
+    constants: Constants = "1987",
 ) -> dict[str, Any]:
-    walked, params = _walk(readings, resume, start_codes, max_gap_days)
+    walked, params = _walk(readings, resume, start_codes, max_gap_days, constants)
     return walk_facts(walked, params=params, spinup_days=spinup_days)
 
 

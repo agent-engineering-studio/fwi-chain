@@ -87,9 +87,11 @@ before you send the text, `fwi_chain.check.check_text(text, facts)`.
   why the weather changed. Do not add causes that are not in it.
 - **Day-length tables are for 46°N.** Far from that latitude, or in the
   southern hemisphere, pass your own `FwiParams`.
-- **Not cffdrs's digits.** The library follows Van Wagner (1987) as printed;
-  cffdrs follows the 1985 FORTRAN program. Over cffdrs's 48-day test series
-  they differ by at most 0.25 FWI points and agree on the class every day.
+- **Not cffdrs's digits, unless asked.** The library follows Van Wagner (1987)
+  as printed; cffdrs follows the 1985 FORTRAN program. Over cffdrs's 48-day
+  test series they differ by at most 0.25 FWI points and agree on the class
+  every day. `CFFDRS_PARAMS` takes the program's constants and matches cffdrs
+  to 0.006. Keep one printing for the whole life of a stored chain.
 - **No overwintering, no snow.** The chain does not stop or restart with the
   season; that is the caller's choice.
 
