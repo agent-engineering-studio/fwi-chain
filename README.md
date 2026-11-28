@@ -168,6 +168,9 @@ Since 1.1 the library also walks a chain over many days from a state you stored
 (`catch_up`, `walk_chain`), redoes it when better rain arrives (`correct_rain`) and
 places a value in the climatology of its place and month (`quantiles`, `percentile`).
 
+Since 1.3 it also reads the noon observation out of hourly weather (`noon_readings`),
+refusing a reading taken far from noon or with hours of rain missing.
+
 Since 1.2 it says **what moved the index**. On 7 May 1985, in the test series of
 `cffdrs`, the FWI went from 21.7 to 52.6:
 

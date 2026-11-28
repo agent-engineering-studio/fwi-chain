@@ -25,6 +25,7 @@ from fwi_chain.climatology import (
 )
 from fwi_chain.danger import EFFIS_FWI_CLASSES, effis_class
 from fwi_chain.explain import Driver, Explanation, explain_change
+from fwi_chain.noon import HourlySample, NoonReading, noon_reading, noon_readings
 from fwi_chain.walk import (
     ChainDay,
     ChainPoint,
@@ -51,7 +52,9 @@ __all__ = [
     "FwiOutputs",
     "FwiParams",
     "FwiState",
+    "HourlySample",
     "NoonObservation",
+    "NoonReading",
     "__version__",
     "accumulate_monthly",
     "advance",
@@ -68,6 +71,8 @@ __all__ = [
     "fire_weather_index",
     "initial_spread_index",
     "node_ceiling",
+    "noon_reading",
+    "noon_readings",
     "percentile",
     "quantiles",
     "rewalk_with_rain",

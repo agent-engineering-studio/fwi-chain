@@ -71,7 +71,11 @@ before you send the text, `fwi_chain.check.check_text(text, facts)`.
   `writable_days(walked, today=...)`: a stored forecast becomes tomorrow's
   predecessor.
 - **Noon, and the rain of the 24 hours before it.** Local solar noon readings;
-  `rain_24h_mm` is the total up to that hour, not the calendar day's.
+  `rain_24h_mm` is the total up to that hour, not the calendar day's. From
+  hourly weather use `noon_readings(samples, days, noon_hour=...,
+  max_hours_from_noon=2, min_rain_hours=20)`: it refuses a reading taken far
+  from noon or with hours of rain missing, and says which. Never sum the hours
+  that happen to be there: a missing hour is not a dry hour.
 - **Units are in the names:** `temperature_c`, `relative_humidity_pct`,
   `wind_speed_kmh` (10 m wind, not m/s), `rain_24h_mm`. The six codes have no
   unit: never "an FWI of 30 %".

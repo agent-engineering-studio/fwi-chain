@@ -6,6 +6,25 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-28
+
+Additions only: nothing in 1.2.0 changed.
+
+### Added
+
+- `noon_reading()` and `noon_readings()` (`fwi_chain.noon`): the noon reading
+  of a day from hourly weather, with the rain of the 24 hours before the hour
+  read. The largest distance from noon and the fewest hours of rain accepted
+  are arguments with no default, and the answer (`NoonReading`) always says
+  which hour was read and how many hours of rain were not measured. New type
+  `HourlySample`, where `None` is "not measured" and never zero.
+- Moved from Limen (`MeteoSnapshot.noon_observation` at 9fbdd2d). With nothing
+  refused it gives Limen's readings (`tests/test_noon.py`, fixture from
+  `scripts/limen_noon_parity.py`). The difference is stated and tested:
+  Limen read the nearest hour however far from noon (05:00 as noon, in one
+  test case) and summed the rain over the hours that were there, so a missing
+  hour counted as dry. Both are now counted, and refused when asked.
+
 ## [1.2.0] - 2026-11-28
 
 Additions only: nothing in 1.1.0 changed. The package still has no

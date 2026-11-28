@@ -1,6 +1,6 @@
 [project]
 name = "fwi-chain"
-version = "1.2.0"
+version = "1.3.0"
 description = "Canadian Fire Weather Index chain (Van Wagner 1987): pure, typed, zero-dependency, verified against the reference day"
 readme = "README.md"
 keywords = ["fire weather index", "fwi", "wildfire", "van wagner", "cffdrs", "ffmc", "drought code"]

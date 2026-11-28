@@ -62,6 +62,7 @@ fwi-chain/
 ├── src/fwi_chain/         # no dependencies, no I/O, no clock
 │   ├── chain.py           # Van Wagner's equations + advance()
 │   ├── walk.py            # many days from a stored state, rain re-walk
+│   ├── noon.py            # the noon reading from hourly weather
 │   ├── climatology.py     # 21 quantiles, percentile, node ceiling
 │   ├── danger.py          # the EFFIS classes
 │   ├── explain.py         # what moved the index
