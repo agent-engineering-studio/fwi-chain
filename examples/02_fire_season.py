@@ -15,16 +15,16 @@ from weather import synthetic_season
 
 from fwi_chain import STANDARD_PARAMS, advance
 
-# The fire danger classes EFFIS uses to colour its European FWI maps.
-# Lower bound inclusive. Classes are regional conventions: calibrate your own
-# for a different climate.
+# The fire danger classes EFFIS uses to colour its European FWI maps, highest
+# first (the same as fwi_chain.effis_class). Lower bound inclusive. Classes are
+# regional conventions: write your own list for a different climate.
 DANGER_CLASSES = [
+    (70.0, "very extreme"),
     (50.0, "extreme"),
     (38.0, "very high"),
     (21.3, "high"),
     (11.2, "moderate"),
-    (5.2, "low"),
-    (0.0, "very low"),
+    (0.0, "low"),
 ]
 
 
@@ -68,7 +68,7 @@ print(f"Peak FWI {peak['fwi']} on {peak['date']} (wind {peak['wind_kmh']} km/h)"
 print("Days per danger class:")
 counts = Counter(r["class"] for r in rows)
 for _, label in reversed(DANGER_CLASSES):
-    print(f"  {label:<10} {counts[label]:4d}  {'#' * (counts[label] // 2)}")
+    print(f"  {label:<12} {counts[label]:4d}  {'#' * (counts[label] // 2)}")
 
 if len(sys.argv) > 1:
     with Path(sys.argv[1]).open("w", newline="") as f:

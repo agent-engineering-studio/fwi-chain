@@ -141,16 +141,18 @@ for their region. EFFIS, for example, uses these for Europe:
 
 | Class | FWI |
 |---|---|
-| Very low | < 5.2 |
-| Low | 5.2 – 11.2 |
+| Low | < 11.2 |
 | Moderate | 11.2 – 21.3 |
 | High | 21.3 – 38.0 |
 | Very high | 38.0 – 50.0 |
-| Extreme | ≥ 50.0 |
+| Extreme | 50.0 – 70.0 |
+| Very extreme | > 70.0 |
 
-`fwi-chain` deliberately does **not** include classes. They are a regional,
-policy-level choice, and [example 02](https://github.com/agent-engineering-studio/fwi-chain/blob/main/examples/02_fire_season.py) shows how
-to add your own in five lines.
+Since 1.2 `effis_class(fwi)` gives this class, with the boundaries as EFFIS
+publishes them ("very extreme" was added in June 2021). A class is a
+convention: for your own, [example 02](https://github.com/agent-engineering-studio/fwi-chain/blob/main/examples/02_fire_season.py)
+shows the five lines it takes. Whether a value is rare in a place is a
+different question: see the climatology in the [API reference](api.md).
 
 ![FWI through a fire season](images/fire-season.svg)
 

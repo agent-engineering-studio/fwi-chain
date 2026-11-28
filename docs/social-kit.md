@@ -34,7 +34,7 @@ hashtags. Copy, adapt, and post. Thank you!
 >
 > What makes it different:
 > ✅ Zero dependencies: it fits in a database job, a stream processor, a serverless function
-> ✅ Verified, not just tested: all six outputs match the published reference day to 1e-9
+> ✅ Measured, not just tested: 48 days against cffdrs in CI, at most 0.25 FWI points apart
 > ✅ The "memory" of the forest floor (weeks of drought) is an explicit state you persist, not hidden in an array
 > ✅ Every line tied to an equation number in Van Wagner (1987)
 >
@@ -53,7 +53,7 @@ hashtags. Copy, adapt, and post. Thank you!
 **Launch (≤ 280 chars)**
 
 > 🔥 fwi-chain: the Canadian Fire Weather Index in pure Python.
-> Zero deps · fully typed · verified to 1e-9 against the reference day · Apache-2.0
+> Zero deps · fully typed · measured against the cffdrs test series · Apache-2.0
 >
 > pip install fwi-chain
 > https://github.com/agent-engineering-studio/fwi-chain
@@ -81,7 +81,7 @@ hashtags. Copy, adapt, and post. Thank you!
 2. It needs only 4 noon readings: temperature, humidity, wind, and 24 h rain. From them it computes 3 moisture codes, one for each layer of the forest floor, from surface litter to deep soil. *(diagram)*
 3. Each layer has a different memory: ~16 hours, ~12 days, ~52 days. So today's danger depends on the whole season, and that's why it's a *chain*. *(moisture-codes)*
 4. Forget that memory (restart mid-season) and you underestimate danger for weeks. fwi-chain hands you the state as a plain value: store it in SQL, a file, a cache. *(restart)*
-5. Zero deps, mypy --strict, verified to 1e-9, Apache-2.0. Contributors welcome: reference data, latitude tables, docs, translations. ⭐ https://github.com/agent-engineering-studio/fwi-chain
+5. Zero deps, mypy --strict, measured against cffdrs in CI, Apache-2.0. Contributors welcome: reference data, latitude tables, docs, translations. ⭐ https://github.com/agent-engineering-studio/fwi-chain
 
 ## Reddit (r/Python, r/datascience, r/gis, r/meteorology)
 
@@ -92,7 +92,7 @@ hashtags. Copy, adapt, and post. Thank you!
 > The FWI is the fire danger index used across Canada, by EFFIS for Europe, and by many other agencies. I extracted the implementation we use in production (Italy, ~9 km grid) into a standalone package:
 >
 > - pure functions, no NumPy, no I/O, about 300 lines, `mypy --strict`
-> - verified against the cffdrs reference day to 1e-9, plus tests for every rain branch and for physical bounds
+> - measured against the 48-day cffdrs test series in CI (at most 0.25 FWI points apart, same class every day), plus tests for every rain branch and for physical bounds
 > - the recursive state (the "memory" of the forest floor) is an explicit dataclass you persist yourself
 >
 > For gridded climate data xclim is still the better tool. This one is for services, databases and streams.
@@ -124,6 +124,6 @@ forest-fire  cffdrs  van-wagner  zero-dependency  typed
 - Implements Van Wagner (1987), *Forestry Technical Report 35*.
 - 6 outputs: FFMC, DMC, DC, ISI, BUI, FWI.
 - Python 3.12+, no runtime dependencies, Apache-2.0.
-- About 300 lines of library code. Reference day matched to an absolute 1e-9.
+- About 300 lines of library code. 48 days against cffdrs: at most 0.25 FWI points apart.
 - A few microseconds per location per day.
 - Extracted from Limen, which runs it on every ~9 km node in Italy.

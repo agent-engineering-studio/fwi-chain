@@ -1,0 +1,94 @@
+{
+  "cffdrs-48-days · FFMC within 0.15 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.123 over 48 days"
+  },
+  "cffdrs-48-days · DMC within 0.1 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.065 over 48 days"
+  },
+  "cffdrs-48-days · DC within 0.01 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.005 over 48 days"
+  },
+  "cffdrs-48-days · ISI within 0.3 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.252 over 48 days"
+  },
+  "cffdrs-48-days · BUI within 0.1 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.063 over 48 days"
+  },
+  "cffdrs-48-days · FWI within 0.3 of cffdrs": {
+    "outcome": "pass",
+    "got": "largest difference 0.254 over 48 days"
+  },
+  "cffdrs-48-days · same EFFIS class as cffdrs, every day": {
+    "outcome": "pass",
+    "got": "48 of 48 days"
+  },
+  "first-day-by-hand · DC = 19.014": {
+    "outcome": "pass",
+    "got": "19.014000"
+  },
+  "first-day-pinned · FFMC = 87.693": {
+    "outcome": "pass",
+    "got": "87.692980"
+  },
+  "first-day-pinned · DMC = 8.54505": {
+    "outcome": "pass",
+    "got": "8.545051"
+  },
+  "first-day-pinned · DC = 19.014": {
+    "outcome": "pass",
+    "got": "19.014000"
+  },
+  "first-day-pinned · ISI = 10.8537": {
+    "outcome": "pass",
+    "got": "10.853661"
+  },
+  "first-day-pinned · BUI = 8.49043": {
+    "outcome": "pass",
+    "got": "8.490427"
+  },
+  "first-day-pinned · FWI = 10.0964": {
+    "outcome": "pass",
+    "got": "10.096371"
+  },
+  "ffmc-ignores-half-a-millimetre · 0.5 mm leaves FFMC as a dry day": {
+    "outcome": "pass",
+    "got": "90.049 against 90.049"
+  },
+  "ffmc-ignores-half-a-millimetre · 0.6 mm lowers FFMC": {
+    "outcome": "pass",
+    "got": "89.669 against 90.049"
+  },
+  "dmc-ignores-1.5-mm · 1.5 mm leaves DMC as a dry day": {
+    "outcome": "pass",
+    "got": "43.678 against 43.678"
+  },
+  "dmc-ignores-1.5-mm · 1.6 mm lowers DMC": {
+    "outcome": "pass",
+    "got": "42.151 against 43.678"
+  },
+  "dc-ignores-2.8-mm · 2.8 mm leaves DC as a dry day": {
+    "outcome": "pass",
+    "got": "308.204 against 308.204"
+  },
+  "dc-ignores-2.8-mm · 2.9 mm lowers DC": {
+    "outcome": "pass",
+    "got": "303.494 against 308.204"
+  },
+  "stale-at-the-limit · 7 days old, limit 7: carried on": {
+    "outcome": "pass",
+    "got": "chain_days 106, DC 563.7"
+  },
+  "stale-one-day-past · 8 days old, limit 7: discarded": {
+    "outcome": "pass",
+    "got": "chain_days 1, DC 24.1"
+  },
+  "stale-between-one-and-two-limits · 10 days old, limit 7: discarded": {
+    "outcome": "pass",
+    "got": "chain_days 1, DC 24.1"
+  }
+}

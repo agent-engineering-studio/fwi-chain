@@ -40,14 +40,16 @@ def test_published_reference_day() -> None:
     """Reference case of the FWI chain, from the standard start-up codes.
 
     Inputs: 17.0 °C, 42 % RH, 25 km/h, 0 mm, April, starting from
-    FFMC/DMC/DC = 85 / 6 / 15. It is the first day of the test series that
-    ships with the reference implementation of Van Wagner's equations (the
-    `cffdrs` R package), and it can be checked by hand: the DC, for
-    instance, is 15 + (0.36·(17+2.8) + 0.9)/2 = 19.014.
+    FFMC/DMC/DC = 85 / 6 / 15. The inputs are the first day of the test series
+    that ships with the `cffdrs` R package; the expected values are this
+    library's own, pinned so that a change is seen. cffdrs itself gives FFMC
+    87.65, ISI 10.78 and FWI 10.04 for this day: it follows the constants of
+    the 1985 FORTRAN program, this library the 1987 report as printed
+    (benchmarks/README.md has the comparison over 48 days). The DC can be
+    checked by hand: 15 + (0.36·(17+2.8) + 0.9)/2 = 19.014.
 
-    Absolute tolerance 1e-9: nothing is being calibrated, a transcription is
-    being checked. A larger deviation is a wrong coefficient, not
-    floating-point noise.
+    Absolute tolerance 1e-9: a larger deviation is a changed coefficient,
+    not floating-point noise.
     """
     out = advance(
         PARAMS.initial_state,

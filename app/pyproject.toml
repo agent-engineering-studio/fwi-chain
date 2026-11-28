@@ -1,0 +1,28 @@
+[project]
+name = "fwi-chain-diario"
+version = "0.1.0"
+description = "Il diario del pericolo d'incendio di fwi-chain: la catena FWI di un luogo, giorno per giorno, sul meteo che l'ente porta"
+requires-python = ">=3.12"
+license = "Apache-2.0"
+dependencies = [
+    "fwi-chain",
+    "starlette>=0.40",
+    "uvicorn>=0.30",
+]
+
+[tool.uv.sources]
+# The app follows the library of this repository, not the one on PyPI.
+fwi-chain = { path = "..", editable = true }
+
+[dependency-groups]
+dev = ["pytest>=8.3", "httpx>=0.27"]
+
+[build-system]
+requires = ["uv_build>=0.13.6,<0.14"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+module-name = "diario"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,77 @@
+# fwi-chain with nothing to install but Docker.
+#
+#   docker compose up                        the page for a public body, on http://localhost:3007
+#                                            and the notebooks, on http://localhost:8885
+#   docker compose --profile mcp up mcp      the MCP server for AI agents: http://localhost:8772/mcp
+#   docker compose run --rm bench            the benchmark of known cases
+#   docker compose run --rm python           Python, with fwi_chain to import
+#   docker compose --profile mcp --profile tools down     stop and remove everything
+#
+#   FWI_CHAIN_PORT             the port of the page (default 3007)
+#   FWI_CHAIN_NOTEBOOKS_PORT   the port of the notebooks (default 8885)
+#   FWI_CHAIN_MCP_PORT         the port of the MCP server (default 8772)
+#   FWI_CHAIN_ENTE             the name of the public body in the header of the page
+#
+# The ports are this library's own, so it runs next to its sisters (dpc-radar
+# is on 3000, rainfall-thresholds on 3001 and 8888, egms-client's MCP on 8768).
+# Every port listens on 127.0.0.1 only, with no token: they are for this
+# machine. To publish the page, put it behind the proxy of your site.
+# The container names are fixed, so `docker ps` says whose they are; a second
+# copy of this project on the same machine needs them changed.
+name: fwi-chain
+
+x-library: &library
+  image: fwi-chain:local
+  build: .
+
+services:
+  # The page for a public body (app/): the chain of one place, day by day,
+  # from the weather the body gives. It fetches nothing.
+  ui:
+    image: fwi-chain-ui:local
+    container_name: fwi-chain-ui
+    build:
+      context: .
+      dockerfile: app/Dockerfile
+    ports:
+      - "127.0.0.1:${FWI_CHAIN_PORT:-3007}:8000"
+    environment:
+      FWI_CHAIN_ENTE: ${FWI_CHAIN_ENTE:-}
+    restart: unless-stopped
+
+  notebooks:
+    <<: *library
+    container_name: fwi-chain-notebooks
+    ports:
+      - "127.0.0.1:${FWI_CHAIN_NOTEBOOKS_PORT:-8885}:8888"
+    volumes:
+      - ./notebooks:/app/notebooks
+    restart: unless-stopped
+
+  # The chain as tools for AI agents, over streamable HTTP. It computes only
+  # from what a call gives it: no network, no weather of its own.
+  mcp:
+    <<: *library
+    container_name: fwi-chain-mcp
+    profiles: [mcp]
+    working_dir: /app
+    command: ["fwi-chain-mcp", "--http", "8772", "--host", "0.0.0.0"]
+    ports:
+      - "127.0.0.1:${FWI_CHAIN_MCP_PORT:-8772}:8772"
+    restart: unless-stopped
+
+  bench:
+    <<: *library
+    container_name: fwi-chain-bench
+    profiles: [tools]
+    working_dir: /app
+    command: ["python", "-m", "benchmarks.run", "--check"]
+
+  python:
+    <<: *library
+    container_name: fwi-chain-python
+    profiles: [tools]
+    working_dir: /app
+    command: ["python"]
+    stdin_open: true
+    tty: true

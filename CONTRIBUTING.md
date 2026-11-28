@@ -18,7 +18,7 @@ open an issue first to say you are taking one, so nobody duplicates the work.
 
 | Idea | Skills | Notes |
 |---|---|---|
-| More reference vectors from the `cffdrs` test series | Python, a little R | add rows with rain, so every rain branch is checked against published values |
+| More reference cases in `benchmarks/` | Python, a little R | another implementation's output, or a fire service's published values for known weather |
 | A table of day-length factors for other latitude bands | fire science | as ready-made `FwiParams` constants, with sources |
 | Daily Severity Rating (`dsr = 0.0272 * fwi ** 1.77`) | Python | a one-line function, plus a test and docs |
 | Comparison notebook against xclim | Python, xarray | in `docs/`, not a dependency |
@@ -59,12 +59,19 @@ make build       # build sdist + wheel
 
 ```
 fwi-chain/
-├── src/fwi_chain/
-│   ├── __init__.py        # public API re-exports, __version__
-│   └── chain.py           # the whole library: Van Wagner's equations + advance()
-├── tests/
-│   ├── test_chain.py      # reference day to 1e-9, rain branches, bounds, memory
-│   └── test_examples.py   # every script in examples/ must run
+├── src/fwi_chain/         # no dependencies, no I/O, no clock
+│   ├── chain.py           # Van Wagner's equations + advance()
+│   ├── walk.py            # many days from a stored state, rain re-walk
+│   ├── climatology.py     # 21 quantiles, percentile, node ceiling
+│   ├── danger.py          # the EFFIS classes
+│   ├── explain.py         # what moved the index
+│   ├── facts.py, check.py # the answers as data, and the text check
+│   └── mcp_server.py      # the MCP server: the only module behind an extra
+├── tests/                 # equations, parity with Limen, package promises, MCP
+├── benchmarks/            # known cases (cffdrs series) and the faithfulness set
+├── app/                   # the page for a public body: its own package and lock
+├── notebooks/             # written from examples/ by tools/make_notebooks.py
+├── skills/, tools/        # the agent skill; llms.txt and notebook builders
 ├── examples/              # runnable, dependency-free scripts (01_… to 06_…)
 │   └── weather.py         # deterministic synthetic season used by examples and figures
 ├── docs/
@@ -76,7 +83,8 @@ fwi-chain/
 
 ## Rules of the road
 
-- **`make check` must pass**: ruff, `mypy --strict` and pytest (coverage ≥ 90 %).
+- **`make check` must pass**: ruff, `mypy --strict`, pytest (coverage ≥ 90 %) and the
+  benchmark. `make help` lists every target.
   It is the same gate CI runs.
 - **Equations are transcribed, not tuned.** Any change to a constant in `chain.py`
   must cite the equation it comes from and come with a reference value that proves it.

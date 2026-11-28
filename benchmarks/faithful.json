@@ -1,0 +1,77 @@
+{
+  "about": "Questions, the tool that answers them, and answers written by hand: one faithful, one with known faults. `expect` lists the faults check_text must find, as [text, fault]. The facts are computed by the library when the set runs, on the 48 days of the cffdrs test series (cffdrs/test_fwi.csv).",
+  "cases": [
+    {
+      "id": "the-peak-day",
+      "question": "Why did the fire weather index jump on 7 May 1985?",
+      "tool": "explain",
+      "args": {"day": "1985-05-07", "spinup_days": 30},
+      "answers": [
+        {
+          "by": "hand, faithful",
+          "text": "On 7 May 1985 the FWI went from 21.7 to 52.6, a rise of 30.9 points, into the EFFIS class extreme (from 50). The wind did most of it: from 12 to 27 km/h it moved the index by 18.0 points. Drier air, from 33 % to 17 % humidity, added 11.1; the temperature, 27 °C to 28 °C, 0.6. The chain's memory alone accounts for 1.2. No rain fell. The chain had walked 25 days and is still spinning up. A fire weather index is not an alert.",
+          "expect": []
+        },
+        {
+          "by": "hand, faults",
+          "text": "On 7 May 1985 the FWI reached 52.6 because the wind rose to 27 % and the temperature to 35 °C, adding 18.5 points.",
+          "expect": [["27 %", "unit"], ["35 °C", "invented"], ["18.5", "invented"]]
+        }
+      ]
+    },
+    {
+      "id": "the-rain",
+      "question": "What did the rain of 9 May 1985 do to the index?",
+      "tool": "explain",
+      "args": {"day": "1985-05-09", "spinup_days": 30},
+      "answers": [
+        {
+          "by": "hand, faithful",
+          "text": "12.2 mm of rain fell in the 24 hours before noon on 9 May. The FWI dropped from 25.9 to 3.0, class low. The rain alone moved it by -21.7 points; the cooler air, 16 °C after 23.5 °C, by -2.0. The drought code barely moved, at 91.8: deep layers forget slowly.",
+          "expect": []
+        },
+        {
+          "by": "hand, faults",
+          "text": "12.2 % of rain brought the FWI down to 3.1 and the drought code to zero in 2 days.",
+          "expect": [["12.2 %", "unit"], ["3.1", "rounded"], ["2 days", "unit"]]
+        }
+      ]
+    },
+    {
+      "id": "the-whole-series",
+      "question": "How dangerous were the 48 days?",
+      "tool": "walk",
+      "args": {},
+      "answers": [
+        {
+          "by": "hand, faithful",
+          "text": "Over 48 days, 13 April to 30 May 1985, 84.2 mm of rain fell. The FWI peaked at 52.6 on 7 May, the only day in the class extreme; 29 days were low, 13 moderate and 5 high. On the last day the FWI was 5.8.",
+          "expect": []
+        },
+        {
+          "by": "hand, faults",
+          "text": "Over 48 days the FWI peaked at 52.6 km/h and 84.2 mm of rain fell while 1,250 hectares burned; 30 days were low.",
+          "expect": [["52.6 km/h", "unit"], ["1,250", "invented"], ["30 days", "unit"]]
+        }
+      ]
+    },
+    {
+      "id": "rare-or-ordinary",
+      "question": "Was an FWI of 52.6 rare for May in this series?",
+      "tool": "percentile",
+      "args": {"month": 5, "day": "1985-05-07"},
+      "answers": [
+        {
+          "by": "hand, faithful",
+          "text": "Among the 30 May days of the series the median FWI is 8.4 and the 90th percentile 22.4. 52.6 is the highest value, at the 100th percentile. Thirty days of one year are not a climatology.",
+          "expect": []
+        },
+        {
+          "by": "hand, faults",
+          "text": "The median FWI of May is 8.4 mm and 52.6 is at the 95th percentile.",
+          "expect": [["8.4 mm", "unit"], ["95", "invented"]]
+        }
+      ]
+    }
+  ]
+}
