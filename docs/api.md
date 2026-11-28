@@ -26,6 +26,11 @@ from fwi_chain import (
     ChainDay,
     catch_up,
     start_is_stale,
+    # the noon reading from hourly weather (1.3)
+    noon_reading,
+    noon_readings,
+    HourlySample,
+    NoonReading,
     # climatology (1.1)
     quantiles,
     percentile,
@@ -277,6 +282,54 @@ The same, on a stored chain: restarts from the last row before `since` (or from
 the chain's first row, if it was born later) and returns every row after it,
 redone. With `weather`, a row whose day is in it takes that observation before the
 rain is applied. Idempotent.
+
+---
+
+## The noon reading
+
+*New in 1.3.* The chain wants one reading a day, at local solar noon. Weather
+usually comes hour by hour; these turn the hours into that reading, and say how
+good a reading it is.
+
+### `HourlySample(time, temperature_c=None, relative_humidity_pct=None, wind_speed_kmh=None, rain_mm=None)`
+
+One hour of weather. `None` is "not measured", never zero: a dry hour has
+`rain_mm=0.0`. `rain_mm` is the rain of the hour that ends at `time`.
+
+### `noon_reading(samples, day, *, noon_hour, max_hours_from_noon, min_rain_hours) -> NoonReading`
+
+Reads the hour of `day` nearest to `noon_hour` among those with temperature,
+humidity and wind (the earlier one on a tie), and sums the rain of the 24 hours
+up to it.
+
+| Argument | Meaning |
+|---|---|
+| `noon_hour` | 0-23, on the samples' own clock. For samples in UTC over Italy, 11 |
+| `max_hours_from_noon` | refuse a reading further than this from `noon_hour`; `None` accepts any hour of the day |
+| `min_rain_hours` | refuse a reading with fewer than this many of the 24 hours of rain measured; `0` accepts any, and missing hours then count as dry |
+
+The last two have **no default**: how much to accept is a choice.
+
+| Field of `NoonReading` | Meaning |
+|---|---|
+| `observation` | the `NoonObservation`, or `None` when refused |
+| `refused` | `None`, or `"no reading"`, `"too far from noon"`, `"too few hours of rain"` |
+| `time`, `hours_from_noon` | the hour read, and its distance from `noon_hour` |
+| `rain_hours`, `rain_hours_missing` | hours of rain measured, and not measured, in the 24 |
+| `rain_measured_mm` | the rain of the measured hours: with hours missing, a lower bound |
+
+```python
+from fwi_chain import noon_readings, walk_chain, STANDARD_PARAMS
+
+readings = noon_readings(samples, days, noon_hour=11, max_hours_from_noon=2, min_rain_hours=20)
+observations = {d: r.observation for d, r in readings.items() if r.observation}
+walked = walk_chain(observations, days, start=None, params=STANDARD_PARAMS, max_gap_days=7)
+skipped = {d: r.refused for d, r in readings.items() if r.refused}  # say why, do not zero
+```
+
+### `noon_readings(samples, days, *, noon_hour, max_hours_from_noon, min_rain_hours) -> dict[date, NoonReading]`
+
+The same for many days, reading the samples once.
 
 ---
 

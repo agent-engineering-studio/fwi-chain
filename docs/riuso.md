@@ -65,6 +65,10 @@ aperte che li danno:
 - **ERA5 / ERA5-Land** dal Climate Data Store di Copernicus, per chi lavora
   su griglia.
 
+Chi ha il meteo ora per ora ricava la lettura di mezzogiorno con
+`noon_readings`, che rifiuta una lettura presa lontano da mezzogiorno o con
+ore di pioggia mancanti, e dice quali.
+
 Un giorno che manca si lascia vuoto: non si scrive mai 0. Una pioggia a zero
 è un giorno asciutto, non un giorno senza dato.
 

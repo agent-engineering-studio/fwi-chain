@@ -7,6 +7,8 @@ hand-written [API reference](api.md) explains the same functions with examples.
 
 ::: fwi_chain.walk
 
+::: fwi_chain.noon
+
 ::: fwi_chain.climatology
 
 ::: fwi_chain.danger
