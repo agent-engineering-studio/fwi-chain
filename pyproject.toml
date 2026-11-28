@@ -1,6 +1,6 @@
 [project]
 name = "fwi-chain"
-version = "1.0.0"
+version = "1.1.0"
 description = "Canadian Fire Weather Index chain (Van Wagner 1987): pure, typed, zero-dependency, verified against the reference day"
 readme = "README.md"
 keywords = ["fire weather index", "fwi", "wildfire", "van wagner", "cffdrs", "ffmc", "drought code"]
@@ -53,6 +53,8 @@ select = ["E", "F", "W", "I", "N", "UP", "B", "C4", "SIM", "ARG", "PTH", "RUF"]
 
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["ARG", "B018"]
+# Stubs standing in for Limen's repositories keep the signatures they replace.
+"scripts/**" = ["ARG"]
 # The docstrings mirror Van Wagner's equations (×, ·, −, °): the math is the point.
 "src/fwi_chain/chain.py" = ["RUF002", "RUF003"]
 "tests/**.py" = ["RUF002", "RUF003"]

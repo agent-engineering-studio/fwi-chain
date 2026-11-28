@@ -15,6 +15,22 @@ from fwi_chain import (
     initial_spread_index,
     buildup_index,
     fire_weather_index,
+    # many days (1.1)
+    walk_chain,
+    days_to_walk,
+    writable_days,
+    rewalk_with_rain,
+    correct_rain,
+    NoonObservation,
+    ChainPoint,
+    ChainDay,
+    # climatology (1.1)
+    quantiles,
+    percentile,
+    node_ceiling,
+    accumulate_monthly,
+    coverage_is_valid,
+    QUANTILE_LEVELS,
 )
 ```
 
@@ -165,3 +181,118 @@ fwi = fire_weather_index(isi, bui)  # 47.2
 ### `__version__`
 
 `fwi_chain.__version__` is the installed package version, read from package metadata.
+
+---
+
+## Many days
+
+*New in 1.1.* `advance()` is one day. These walk a chain over many, from a point
+you stored, and leave the storing to you. Days are `datetime.date` values you pass
+in: nothing reads a clock, so "today" is always an argument.
+
+### Types
+
+| Type | Fields | Meaning |
+|---|---|---|
+| `NoonObservation` | `temperature_c`, `relative_humidity_pct`, `wind_speed_kmh`, `rain_24h_mm` | the four noon readings of one day |
+| `ChainPoint` | `day`, `state`, `chain_days` | a chain as of one day: where a walk resumes from |
+| `ChainDay` | `day`, `outputs`, `chain_days`, `observation` | one walked day. `.point` gives it back as a `ChainPoint` |
+
+`chain_days` counts the days the chain has been advanced since it last started
+from the standard codes. It tells a settled drought code from one still reporting
+its seed.
+
+### `walk_chain(observations, days, *, start, params, max_gap_days) -> list[ChainDay]`
+
+Walks one chain over `days`. `observations` maps a day to its `NoonObservation`;
+`start` is the last stored `ChainPoint` before `days[0]`, or `None`.
+
+- A day with no observation is **skipped, not zeroed**.
+- A `start` more than `max_gap_days` before `days[0]` is discarded: the walk
+  restarts from `params.initial_state` and `chain_days` from zero.
+- Days missing inside the window are not counted against `max_gap_days`.
+
+```python
+from datetime import date
+from fwi_chain import STANDARD_PARAMS, NoonObservation, walk_chain
+
+days = [date(2026, 7, 1), date(2026, 7, 2), date(2026, 7, 3)]
+observations = {
+    days[0]: NoonObservation(31, 22, 18, 0),
+    days[2]: NoonObservation(28, 35, 10, 4.2),  # 2 July is missing: skipped
+}
+walked = walk_chain(observations, days, start=None, params=STANDARD_PARAMS, max_gap_days=7)
+resume_from = walked[-1].point  # store this; pass it as `start` next time
+```
+
+### `days_to_walk(target, *, last_day, max_gap_days) -> list[date]`
+
+The days to walk to bring a chain up to `target`: from the day after `last_day`,
+never further back than `max_gap_days` before `target`. `[target]` when `last_day`
+is `None`.
+
+### `writable_days(walked, *, today) -> list[ChainDay]`
+
+The walked days on or before `today`. A forecast day is worth computing and must
+never be stored: it would become tomorrow's predecessor.
+
+### `rewalk_with_rain(rows, start, rain, *, params, max_gap_days) -> list[ChainDay]`
+
+Redoes `rows` from `start` with measured rain. `rain` maps a day to millimetres
+over the 24 h before its noon reading; a day missing from it, or mapped to `None`,
+keeps the row's own rain, because a hole in the measurement is not a dry day.
+Temperature, humidity and wind are the rows' own. Stops at the first row more than
+`max_gap_days` after the one before it.
+
+### `correct_rain(series, *, since, rain, params, max_gap_days, weather=None) -> list[ChainDay]`
+
+The same, on a stored chain: restarts from the last row before `since` (or from
+the chain's first row, if it was born later) and returns every row after it,
+redone. With `weather`, a row whose day is in it takes that observation before the
+rain is applied. Idempotent.
+
+---
+
+## Climatology
+
+*New in 1.1.* Where an FWI falls in the distribution of its place and its month.
+
+### `QUANTILE_LEVELS`
+
+`(0.0, 5.0, …, 100.0)`: the 21 levels every function here uses.
+
+### `quantiles(values) -> list[float]`
+
+The 21 quantiles of `values`, linearly interpolated between ranks. Raises
+`ValueError` on an empty sequence.
+
+### `percentile(value, q) -> float`
+
+The percentile (0–100) of `value` among the 21 quantiles `q`. 0 or 100 outside the
+distribution. On a flat stretch, such as a winter month with many days at FWI 0,
+it returns the centre of the stretch.
+
+```python
+from fwi_chain import percentile, quantiles
+
+q = quantiles(august_fwi_values)  # years of 1–31 August, for one place
+percentile(41.0, q)  # e.g. 92.5: a rare day here
+```
+
+### `node_ceiling(per_month, *, quantile, months, minimum, maximum) -> float | None`
+
+A place's "full" FWI: the mean over `months` of the monthly quantile at level
+`quantile`, kept between `minimum` and `maximum`. `per_month` maps a month (1–12)
+to its 21 quantiles. `None` when none of `months` has them.
+
+### `accumulate_monthly(observations, days, per_month, *, state, days_walked, params, spinup_days) -> tuple[FwiState, int]`
+
+Advances the chain over `days` and **appends** each day's FWI to
+`per_month[month]`, a dict you own. Returns the new state and day count, to pass
+back in for the next stretch. The first `spinup_days` walked days move the chain
+but stay out of the distribution.
+
+### `coverage_is_valid(observed, days, *, max_gap_days, min_fraction=0.95) -> bool`
+
+Whether a stretch of days has enough observations to enter a climatology: at least
+`min_fraction` of them, and no run of missing days longer than `max_gap_days`.
