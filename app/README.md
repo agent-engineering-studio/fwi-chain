@@ -40,7 +40,7 @@ uv run pytest                                   # i test dell'API
 | Variabile | Che cosa fa | Senza |
 |---|---|---|
 | `FWI_CHAIN_ENTE` | il nome dell'ente in testata | "Diario del pericolo d'incendio" |
-| `FWI_CHAIN_DATI` | il file CSV dell'esempio | `data/esempio_canada_1985.csv` |
+| `FWI_CHAIN_DATI` | il file CSV dell'esempio | `data/esempio_gioia_del_colle_2025.csv` |
 | `FWI_CHAIN_STATIC` | la cartella della pagina | `static/` |
 
 Per pubblicarla, mettetela dietro il proxy del vostro sito.
@@ -52,8 +52,8 @@ Per pubblicarla, mettetela dietro il proxy del vostro sito.
    nelle 24 ore prima di mezzogiorno). Separatore `,` o `;`; con `;` vale la
    virgola decimale. L'intestazione è facoltativa. Un valore vuoto vuol dire
    «non misurato»: il giorno è saltato, mai messo a zero, e la pagina dice
-   quanti giorni ha saltato. «Carica l'esempio» mette 48 giorni del Canada
-   del 1985: non sono dati locali.
+   quanti giorni ha saltato. «Carica l'esempio» mette l'estate 2025 di Gioia
+   del Colle (BA), meteo ricostruito da Open-Meteo: non sono misure di stazione.
 2. **La catena, giorno per giorno.** Il grafico dell'FWI sulle fasce delle
    classi EFFIS, e la tabella: le quattro letture, FFMC, DMC, DC, ISI, BUI,
    FWI, classe. I primi giorni (30, se non si cambia) sono «in avviamento»: i
@@ -86,10 +86,15 @@ li pubblicano i servizi antincendio.
 
 ## Dati
 
-L'esempio (`data/esempio_canada_1985.csv`) è la serie di prova `test_fwi` del
-pacchetto R cffdrs: 48 giorni, dal 13 aprile al 30 maggio 1985, da Van Wagner
-C.E. e Pickett T.L. (1985), *Equations and FORTRAN program for the Canadian
-Forest Fire Weather Index System*, Forestry Technical Report 33. Le classi di
+L'esempio (`data/esempio_gioia_del_colle_2025.csv`) è l'estate 2025 di Gioia
+del Colle (BA), dal 1 maggio al 30 settembre: 153 letture di mezzogiorno (11
+UTC) dalla [Historical Weather API di Open-Meteo](https://open-meteo.com/en/docs/historical-weather-api),
+rianalisi ERA5 di Copernicus, licenza [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+Il mezzogiorno di ogni giorno è letto con `fwi_chain.noon_readings`. È meteo
+ricostruito da un modello a circa 25 km, non una stazione: i temporali locali
+possono mancare. Si rigenera con `uv run python tools/make_app_sample.py` (serve
+la rete). Fino a fwi-chain 1.3.0 l'esempio era la serie di prova di cffdrs
+(Canada, 1985): è stato tolto perché cffdrs è distribuito sotto GPL-2. Le classi di
 pericolo sono quelle di EFFIS. Le tabelle della durata del giorno sono quelle
 standard di Van Wagner (46°N). Bootstrap Italia è servito dalla pagina stessa,
 senza CDN.

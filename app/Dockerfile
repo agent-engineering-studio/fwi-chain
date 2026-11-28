@@ -18,7 +18,7 @@ ENV UV_PROJECT_ENVIRONMENT=/opt/venv \
     UV_NO_CACHE=1 \
     PATH=/opt/venv/bin:$PATH \
     PYTHONUNBUFFERED=1 \
-    FWI_CHAIN_DATI=/srv/app/data/esempio_canada_1985.csv \
+    FWI_CHAIN_DATI=/srv/app/data/esempio_gioia_del_colle_2025.csv \
     FWI_CHAIN_STATIC=/srv/app/static
 
 # The library first, then the app on top of it.

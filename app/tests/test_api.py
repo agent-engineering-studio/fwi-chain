@@ -62,15 +62,16 @@ def test_without_a_name_the_header_is_the_diary(monkeypatch: pytest.MonkeyPatch)
 def test_the_sample_says_where_it_is_from(client: TestClient) -> None:
     r = client.get("/api/esempio")
     assert r.headers["content-type"].startswith("text/csv")
-    assert "ESEMPIO" in r.text and "Canada" in r.text and "cffdrs" in r.text
-    assert client.get("/api/salute").json() == {"ok": True, "giorni_esempio": 48}
+    assert "ESEMPIO" in r.text and "Gioia del Colle" in r.text
+    assert "Open-Meteo" in r.text and "CC BY 4.0" in r.text
+    assert client.get("/api/salute").json() == {"ok": True, "giorni_esempio": 153}
 
 
-def test_the_sample_is_48_days_and_the_library_s_own_chain(client: TestClient) -> None:
+def test_the_sample_is_a_summer_and_the_library_s_own_chain(client: TestClient) -> None:
     testo = client.get("/api/esempio").text
     r = catena(client, testo)
-    assert len(r["giorni"]) == 48 and r["saltati"] == [] and r["giorni_senza_riga"] == 0
-    assert r["giorni"][0]["day"] == "1985-04-13" and r["giorni"][-1]["day"] == "1985-05-30"
+    assert len(r["giorni"]) == 153 and r["saltati"] == [] and r["giorni_senza_riga"] == 0
+    assert r["giorni"][0]["day"] == "2025-05-01" and r["giorni"][-1]["day"] == "2025-09-30"
 
     osservazioni = api.leggi_righe(testo).osservazioni
     diretti = walk_chain(
@@ -82,16 +83,16 @@ def test_the_sample_is_48_days_and_the_library_s_own_chain(client: TestClient) -
     ]
 
     s = r["sintesi"]
-    assert s["walked_days"] == 48
+    assert s["walked_days"] == 153
     assert s["peak"]["fwi"] == max(g["codes"]["fwi"] for g in r["giorni"])
-    assert sum(s["class_days"].values()) == 48
+    assert sum(s["class_days"].values()) == 153
     assert s["last"] == r["giorni"][-1]
     assert "non è un'allerta" in r["regola"]
 
 
 def test_spin_up_days_are_marked(client: TestClient) -> None:
     r = catena(client, client.get("/api/esempio").text)
-    assert [g["settled"] for g in r["giorni"]] == [False] * 29 + [True] * 19
+    assert [g["settled"] for g in r["giorni"]] == [False] * 29 + [True] * 124
     r = catena(client, RIGHE, giorni_avviamento=2)
     assert [g["settled"] for g in r["giorni"]] == [False, True, True, True]
 
@@ -211,7 +212,7 @@ def test_the_page_is_served_and_calls_nothing_outside(client: TestClient) -> Non
     assert r.status_code == 200
     pagina = r.text
     assert "Diario del pericolo d'incendio" in pagina
-    assert "non è un'allerta" in pagina and "Canada" in pagina and "Limen" in pagina
+    assert "non è un'allerta" in pagina and "Open-Meteo" in pagina and "Limen" in pagina
     # The only absolute URLs are plain links the reader may follow.
     senza_link = re.sub(r"<a\b[^>]*>", "", pagina)
     assert "http://" not in senza_link and "https://" not in senza_link

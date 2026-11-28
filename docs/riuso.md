@@ -28,10 +28,12 @@ pagina stessa, senza CDN:
 
 ![Il diario: la catena giorno per giorno](images/diario-catena.png)
 
-![Che cosa ha mosso l'indice il 7 maggio 1985](images/diario-che-cosa-ha-mosso.png)
+![Che cosa ha mosso l'indice il 15 luglio 2025](images/diario-che-cosa-ha-mosso.png)
 
-Nelle immagini c'è l'esempio incluso: 48 giorni in Canada nel 1985, la serie di
-prova di `cffdrs`. Non sono dati di un territorio italiano.
+Nelle immagini c'è l'esempio incluso: Gioia del Colle (BA), dal 1 maggio al 30
+settembre 2025, meteo ricostruito dalla rianalisi ERA5 e distribuito da
+[Open-Meteo](https://open-meteo.com/) con licenza CC BY 4.0. È un modello, non
+una stazione: serve a vedere la pagina, non a dire com'è andata quell'estate.
 
 ```bash
 FWI_CHAIN_ENTE="Comune di Gioia del Colle" docker compose up ui

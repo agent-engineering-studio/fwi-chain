@@ -40,6 +40,14 @@ Additions only: with the default, every number of 1.3.0 is unchanged.
   in `benchmarks/results.json`, with the attribution. Notebook 07 and the
   blog figures download the series the same way. The files remain in the git
   history of 1.2.0 and 1.3.0; they were never in a published package.
+- **The diary's sample is an Italian summer.** `app/data/esempio_canada_1985.csv`
+  held the same 48 readings of the cffdrs series, reformatted, so it went for
+  the same reason. In its place is `esempio_gioia_del_colle_2025.csv`: Gioia del
+  Colle (BA), 1 May to 30 September 2025, noon readings (11 UTC) taken with
+  `noon_readings()` from the Open-Meteo historical weather API (ERA5
+  reanalysis, CC BY 4.0, credited on the page and in the file). It is a model,
+  not a station. `tools/make_app_sample.py` writes it again; the screenshots
+  of the diary are redone on it.
 
 ## [1.3.0] - 2026-11-28
 
