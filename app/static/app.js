@@ -300,7 +300,7 @@ function esporta() {
     `# ${ultima.regola}`,
     `# Calcolato con fwi-chain ${$("versione").textContent}. Codici iniziali: FFMC ${c.ffmc}, DMC ${c.dmc}, DC ${c.dc}. `
       + `Giorni di avviamento: ${ultima.giorni_avviamento}.`,
-    ...(ultima.esempio ? ["# ESEMPIO: Canada, 1985. Non sono dati locali."] : []),
+    ...(ultima.esempio ? ["# ESEMPIO: Gioia del Colle, estate 2025. Meteo Open-Meteo (CC BY 4.0), rianalisi ERA5: non misure di stazione."] : []),
     ...(ultima.saltati.length ? [`# Giorni saltati (lettura non misurata): ${ultima.saltati.join(" ")}`] : []),
     testa.join(","),
     ...righe,

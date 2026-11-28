@@ -11,3 +11,6 @@ htmlcov/
 
 # zensical
 site/
+
+# the cffdrs test series, downloaded by the benchmark (GPL-2: never committed)
+benchmarks/cffdrs/.cache/

@@ -24,7 +24,8 @@ the same danger class every day. See [Validation](validation.md).
 
 They answer the same equations, with one known difference: `cffdrs` follows the
 constants of the 1985 FORTRAN program, this library the 1987 report as printed.
-See [Validation](validation.md). Pick the one that fits your pipeline.
+`CFFDRS_PARAMS` takes the program's constants: then the six codes match
+cffdrs to 0.006. See [Validation](validation.md). Pick the one that fits your pipeline.
 
 ### Why should I persist the state? Can't I just start from 85 / 6 / 15 every day?
 

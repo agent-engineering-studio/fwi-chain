@@ -14,3 +14,4 @@ docs
 **/node_modules
 app/.venv
 app/static/vendor
+benchmarks/cffdrs/.cache

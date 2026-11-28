@@ -48,8 +48,8 @@ jobs:
           python-version: "3.13"
           enable-cache: true
       - run: uv sync --locked
-      - run: uv run python -m benchmarks.run --check
-      - run: uv run python -m benchmarks.faithful --check
+      - run: uv run python -m benchmarks.run --check --require-download
+      - run: uv run python -m benchmarks.faithful --check --require-download
 
   notebooks:
     runs-on: ubuntu-latest

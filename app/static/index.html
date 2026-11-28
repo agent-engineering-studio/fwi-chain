@@ -58,9 +58,11 @@
           <label for="file" class="form-label">Oppure un file CSV</label>
           <input id="file" class="form-control" type="file" accept=".csv,.txt,text/csv,text/plain">
           <button id="carica-esempio" class="btn btn-outline-primary mt-3" type="button">Carica l'esempio</button>
-          <p class="small mt-2">L'esempio non è un dato locale: sono 48 giorni in <strong>Canada</strong>,
-            dal 13 aprile al 30 maggio <strong>1985</strong>. È la serie di prova del pacchetto R
-            cffdrs (Van Wagner e Pickett 1985). Serve solo a vedere come funziona la pagina.</p>
+          <p class="small mt-2">L'esempio è <strong>Gioia del Colle</strong> (BA), dal 1 maggio al
+            30 settembre <strong>2025</strong>: meteo ricostruito dalla rianalisi ERA5, non misurato
+            da una stazione. Dati <a href="https://open-meteo.com/">Open-Meteo</a>, licenza
+            <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>. Serve a vedere
+            come funziona la pagina, non a dire com'è andata quell'estate.</p>
         </div>
       </div>
       <details class="mt-3">
@@ -96,7 +98,8 @@
       <p id="vuoto">Ancora niente: caricate il meteo e premete «Calcola la catena».</p>
       <div id="risultato" class="d-none">
         <div id="nota-esempio" class="alert alert-info d-none" role="note">
-          State guardando l'esempio: Canada, 1985. Non sono dati del vostro territorio.
+          State guardando l'esempio: Gioia del Colle, estate 2025, meteo ricostruito da un
+          modello (Open-Meteo, ERA5). Non sono misure di una stazione.
         </div>
         <p id="sintesi"></p>
         <ul id="note" class="small"></ul>
@@ -166,7 +169,9 @@
       <span id="versione"></span>, codice aperto (Apache-2.0). L'indice è il Fire Weather Index
       canadese (Van Wagner 1987), con le tabelle della durata del giorno standard (46°N). Le
       classi sono quelle che EFFIS usa per tutta l'Europa. Dove un valore non è misurato il
-      giorno è saltato, mai messo a zero.</p>
+      giorno è saltato, mai messo a zero. Meteo dell'esempio:
+      <a href="https://open-meteo.com/">Open-Meteo</a> (CC BY 4.0), dalla rianalisi ERA5 di
+      Copernicus.</p>
   </footer>
 
   <script src="app.js"></script>

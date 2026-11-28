@@ -6,6 +6,49 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-28
+
+Additions only: with the default, every number of 1.3.0 is unchanged.
+
+### Added
+
+- `FwiParams.constants`: `"1987"` (the report, the default) or `"cffdrs"`
+  (the FORTRAN program of 1985, which the cffdrs R package follows), and
+  `CFFDRS_PARAMS`, `STANDARD_PARAMS` with the program's constants. They are
+  147.27723 for 147.2 in the FFMC scale (Eq. 1, 10, and the ISI) and
+  `280 / exp(0.023 P)` for `exp(5.6348 - P / 43.43)` in the DMC (Eq. 12).
+  With them the six codes agree with cffdrs to 0.006 over its 48-day test
+  series, against 0.254 FWI points with the default. `fine_fuel_moisture_code`,
+  `duff_moisture_code` and `initial_spread_index` take the same `constants`
+  keyword. The type is `Constants`.
+- The printing is named in the facts (`constants` in `day_facts` with params
+  and in `walk_facts`), and the MCP tools `walk` and `explain` take
+  `constants`.
+- The benchmark measures both printings against cffdrs.
+
+### Changed
+
+- **The two cffdrs files are no longer in the repository.** `test_fwi.csv` and
+  `fwi_01.csv` came from cffdrs, which is distributed under GPL-2, while this
+  repository is Apache-2.0: rather than keep files of two licences in one
+  tree, the benchmark now
+  downloads them from cffdrs_r at the commit of version 1.10.0
+  (`4d20a303bf`), by a fixed URL, and refuses a file whose SHA-256 is not the
+  one recorded in `benchmarks/cffdrs/README.md`. With no network the
+  comparison says **skipped**, never passed; CI runs with
+  `--require-download`. What stays here is ours: the differences we measured,
+  in `benchmarks/results.json`, with the attribution. Notebook 07 and the
+  blog figures download the series the same way. The files remain in the git
+  history of 1.2.0 and 1.3.0; they were never in a published package.
+- **The diary's sample is an Italian summer.** `app/data/esempio_canada_1985.csv`
+  held the same 48 readings of the cffdrs series, reformatted, so it went for
+  the same reason. In its place is `esempio_gioia_del_colle_2025.csv`: Gioia del
+  Colle (BA), 1 May to 30 September 2025, noon readings (11 UTC) taken with
+  `noon_readings()` from the Open-Meteo historical weather API (ERA5
+  reanalysis, CC BY 4.0, credited on the page and in the file). It is a model,
+  not a station. `tools/make_app_sample.py` writes it again; the screenshots
+  of the diary are redone on it.
+
 ## [1.3.0] - 2026-11-28
 
 Additions only: nothing in 1.2.0 changed.

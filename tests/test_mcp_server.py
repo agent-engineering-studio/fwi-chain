@@ -11,7 +11,7 @@ pytest.importorskip("mcp")
 from mcp import Client
 from mcp.server.mcpserver import MCPServer
 
-from fwi_chain import STANDARD_PARAMS, advance
+from fwi_chain import CFFDRS_PARAMS, STANDARD_PARAMS, advance
 from fwi_chain import mcp_server as m
 from fwi_chain.facts import RULE
 
@@ -65,6 +65,28 @@ async def test_walk_resumes_from_a_stored_point_and_from_other_start_codes() -> 
         assert w["last"]["chain_days"] == 61 and w["series"][0]["dc"] > 500.0
         seeded = await call(client, "walk", readings=READINGS[:1], start_codes={"dc": 300.0})
         assert 300.0 < seeded["series"][0]["dc"] < 320.0
+
+
+async def test_walk_names_the_constants_and_can_take_cffdrs() -> None:
+    async with Client(m.create_server()) as client:
+        report = await call(client, "walk", readings=READINGS[:1])
+        program = await call(client, "walk", readings=READINGS[:1], constants="cffdrs")
+        assert report["constants"] == "1987" and report["last"]["constants"] == "1987"
+        assert program["constants"] == "cffdrs" and program["last"]["constants"] == "cffdrs"
+        first = advance(
+            CFFDRS_PARAMS.initial_state,
+            month=7,
+            temperature_c=30.0,
+            relative_humidity_pct=25.0,
+            wind_speed_kmh=20.0,
+            rain_24h_mm=0.0,
+            params=CFFDRS_PARAMS,
+        )
+        assert program["series"][0]["ffmc"] == round(first.state.ffmc, 1)
+        seeded = await call(
+            client, "walk", readings=READINGS[:1], start_codes={"dc": 300.0}, constants="cffdrs"
+        )
+        assert seeded["constants"] == "cffdrs"
 
 
 async def test_explain_percentile_and_check() -> None:

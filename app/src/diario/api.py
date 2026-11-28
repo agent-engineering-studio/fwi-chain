@@ -49,7 +49,9 @@ from fwi_chain.facts import EFFIS_URL, RULE, day_facts, walk_facts
 
 HERE = Path(__file__).resolve().parent
 DATA = Path(
-    os.environ.get("FWI_CHAIN_DATI", HERE.parent.parent / "data" / "esempio_canada_1985.csv")
+    os.environ.get(
+        "FWI_CHAIN_DATI", HERE.parent.parent / "data" / "esempio_gioia_del_colle_2025.csv"
+    )
 )
 STATIC = Path(os.environ.get("FWI_CHAIN_STATIC", HERE.parent.parent / "static"))
 
@@ -92,7 +94,7 @@ class Meteo:
 
 @cache
 def esempio() -> str:
-    """Il CSV dell'esempio: Canada 1985, la serie di prova del pacchetto R cffdrs."""
+    """Il CSV dell'esempio: Gioia del Colle, estate 2025, meteo Open-Meteo (CC BY 4.0)."""
     return DATA.read_text(encoding="utf-8")
 
 

@@ -104,12 +104,16 @@ def what_moved_the_index() -> dict[str, Any]:
                 "notebook walks the chain over the 48 days of the test series of the `cffdrs` "
                 "R package (13 April to 30 May 1985, from Van Wagner & Pickett 1985), takes "
                 "one day apart, and checks a sentence written about it.\n\n"
-                "No network: the series is in `benchmarks/cffdrs/`.\n\n" + RULE
+                "The series is downloaded once from cffdrs (version 1.10.0, at a fixed "
+                "commit) and checked by its SHA-256: it is not in this repository, because "
+                "cffdrs is distributed under GPL-2.\n\n" + RULE
             ),
             code(
                 "import csv\n"
-                "from datetime import date\n"
-                "from pathlib import Path\n\n"
+                "import hashlib\n"
+                "import io\n"
+                "import urllib.request\n"
+                "from datetime import date\n\n"
                 "import matplotlib.pyplot as plt\n\n"
                 "from fwi_chain import (\n"
                 "    EFFIS_FWI_CLASSES,\n"
@@ -120,8 +124,15 @@ def what_moved_the_index() -> dict[str, Any]:
                 ")\n"
                 "from fwi_chain.check import check_text\n"
                 "from fwi_chain.facts import day_facts\n\n"
-                'with Path("../benchmarks/cffdrs/test_fwi.csv").open() as f:\n'
-                '    rows = list(csv.DictReader(f, delimiter=";"))\n'
+                "URL = (\n"
+                '    "https://raw.githubusercontent.com/cffdrs/cffdrs_r/"\n'
+                '    "4d20a303bf94febccce62f068cc8ffad0fec57c1/data/test_fwi.csv"\n'
+                ")\n"
+                'SHA256 = "9fac2165cbc4ffdadd9509943efebddba29afcb6936a4e60ab4d86fafd2a6c2a"\n'
+                "with urllib.request.urlopen(URL, timeout=30) as response:\n"
+                "    raw = response.read()\n"
+                'assert hashlib.sha256(raw).hexdigest() == SHA256, "not cffdrs 1.10.0"\n'
+                'rows = list(csv.DictReader(io.StringIO(raw.decode()), delimiter=";"))\n'
                 "observations = {\n"
                 '    date(int(r["yr"]), int(r["mon"]), int(r["day"])): NoonObservation(\n'
                 '        float(r["temp"]), float(r["rh"]), float(r["ws"]), float(r["prec"])\n'

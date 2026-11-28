@@ -51,7 +51,8 @@ NOTES = """\
 - No clock is read: "today" is always an argument.
 - It follows the equations as printed in Van Wagner (1987). The cffdrs R package follows the
   1985 FORTRAN program: over its 48-day test series the two differ by at most 0.25 FWI
-  points, and agree on the EFFIS class every day."""
+  points, and agree on the EFFIS class every day. `CFFDRS_PARAMS` (or
+  `FwiParams(constants="cffdrs")`) takes the program's constants and matches cffdrs to 0.006."""
 
 #: What each page of the nav holds, for llms.txt.
 DESCRIPTIONS = {

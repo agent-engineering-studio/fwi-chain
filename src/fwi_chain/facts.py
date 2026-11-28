@@ -73,6 +73,8 @@ def day_facts(
     21 quantiles of this place and month), ``climatology`` says where the FWI
     falls among them. With ``spinup_days``, ``settled`` is false while the
     chain has walked fewer days than that and is still reporting its seed.
+    With ``params``, ``constants`` names the printing the codes were computed
+    with: ``"1987"`` (the report) or ``"cffdrs"`` (the 1985 program).
     """
     observation = day.observation
     facts: dict[str, Any] = {
@@ -88,6 +90,8 @@ def day_facts(
         "effis_class_from": _CLASS_FROM,
         "chain_days": day.chain_days,
     }
+    if params is not None:
+        facts["constants"] = params.constants
     if spinup_days is not None:
         facts["settled"] = day.chain_days >= spinup_days
         facts["spinup_days"] = spinup_days
@@ -139,6 +143,7 @@ def walk_facts(
 
     ``series`` has one row per walked day. ``last`` is :func:`day_facts` of
     the last day, with what moved it when there is a day before.
+    ``constants`` names the printing of the constants the chain was walked with.
 
     Raises ``ValueError`` on an empty walk: no day was walked, and "no fire
     danger" would be a different statement.
@@ -153,6 +158,7 @@ def walk_facts(
         "first_day": walked[0].day.isoformat(),
         "last_day": last.day.isoformat(),
         "walked_days": len(walked),
+        "constants": params.constants,
         "rain_total_mm": _r(sum(d.observation.rain_24h_mm for d in walked)),
         "peak": {
             "day": peak.day.isoformat(),

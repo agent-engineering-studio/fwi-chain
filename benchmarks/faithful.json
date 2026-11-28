@@ -1,5 +1,5 @@
 {
-  "about": "Questions, the tool that answers them, and answers written by hand: one faithful, one with known faults. `expect` lists the faults check_text must find, as [text, fault]. The facts are computed by the library when the set runs, on the 48 days of the cffdrs test series (cffdrs/test_fwi.csv).",
+  "about": "Questions, the tool that answers them, and answers written by hand: one faithful, one with known faults. `expect` lists the faults check_text must find, as [text, fault]. The facts are computed by the library when the set runs, on the 48 days of the cffdrs test series, downloaded and checked by SHA-256 (cffdrs/README.md).",
   "cases": [
     {
       "id": "the-peak-day",

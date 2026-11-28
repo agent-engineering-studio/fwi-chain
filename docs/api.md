@@ -9,6 +9,7 @@ from fwi_chain import (
     FwiOutputs,
     FwiParams,
     STANDARD_PARAMS,
+    CFFDRS_PARAMS,
     fine_fuel_moisture_code,
     duff_moisture_code,
     drought_code,
@@ -127,15 +128,38 @@ What a deployment may choose, as opposed to the constants Van Wagner fixed.
 | `dc_start` | `float` | DC at the start of the season |
 | `day_length_dmc` | `tuple[float, ...]` | 12 monthly DMC day-length factors, **January first** |
 | `day_length_dc` | `tuple[float, ...]` | 12 monthly DC day-length adjustments, **January first** |
+| `constants` | `"1987"` or `"cffdrs"` | which printing of two constants. Default `"1987"` (since 1.4.0) |
 
 - `initial_state` (property) returns `FwiState(ffmc_start, dmc_start, dc_start)`.
 - The constructor raises `ValueError` if a table does not have exactly 12 entries.
-  An 11-entry table would otherwise shift the whole year silently.
+  An 11-entry table would otherwise shift the whole year silently. It raises
+  `ValueError` too for a `constants` that is neither `"1987"` nor `"cffdrs"`.
+
+**`constants`.** The 1987 report and the FORTRAN program of Van Wagner &
+Pickett (1985) print two constants differently:
+
+| | `"1987"`: the report (default) | `"cffdrs"`: the 1985 program |
+|---|---|---|
+| FFMC scale (Eq. 1, 10, and the ISI) | 147.2 | 147.27723 |
+| DMC wetting (Eq. 12) | `exp(5.6348 - P / 43.43)` | `280 / exp(0.023 P)` |
+
+The `cffdrs` R package follows the program. Over its 48-day test series, with
+`"1987"` the FWI is at most 0.254 points from cffdrs; with `"cffdrs"` every
+code is within 0.006, the rounding of cffdrs's own output. The class is the
+same on all 48 days either way ([benchmark](benchmark.md)). Walk one chain
+with one printing from start to end: a stored state carries its digits.
+The facts (`fwi_chain.facts`) and the MCP tools name the printing in
+`constants`.
 
 ### `STANDARD_PARAMS`
 
 Van Wagner's published defaults: start-up codes 85 / 6 / 15 and the day-length
-tables for 46°N (Tables 2 and 3 of the 1987 report).
+tables for 46°N (Tables 2 and 3 of the 1987 report), with `constants="1987"`.
+
+### `CFFDRS_PARAMS`
+
+`STANDARD_PARAMS` with `constants="cffdrs"`: the same start-up codes and
+tables, the constants of the 1985 program. Use it to match cffdrs's digits.
 
 | Month | J | F | M | A | M | J | J | A | S | O | N | D |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
@@ -149,12 +173,12 @@ tables for 46°N (Tables 2 and 3 of the 1987 report).
 Use these for sensitivity analysis, teaching, or a custom chain. The equation
 numbers refer to Van Wagner (1987).
 
-### `fine_fuel_moisture_code(previous, *, temperature_c, relative_humidity_pct, wind_speed_kmh, rain_24h_mm) -> float`
+### `fine_fuel_moisture_code(previous, *, temperature_c, relative_humidity_pct, wind_speed_kmh, rain_24h_mm, constants="1987") -> float`
 
 Eqs. 1–10. Returns today's FFMC on the 0–101 scale. Rain at or below 0.5 mm is
 intercepted by the canopy and ignored.
 
-### `duff_moisture_code(previous, *, temperature_c, relative_humidity_pct, rain_24h_mm, day_length) -> float`
+### `duff_moisture_code(previous, *, temperature_c, relative_humidity_pct, rain_24h_mm, day_length, constants="1987") -> float`
 
 Eqs. 11–17. `day_length` is the month's factor, e.g. `params.day_length_dmc[month - 1]`.
 Rain at or below 1.5 mm is ignored. Below −1.1 °C there is no drying.
@@ -164,7 +188,7 @@ Rain at or below 1.5 mm is ignored. Below −1.1 °C there is no drying.
 Eqs. 18–23. `day_length` is e.g. `params.day_length_dc[month - 1]`. Rain at or below
 2.8 mm is ignored. Below −2.8 °C there is no drying.
 
-### `initial_spread_index(ffmc, *, wind_speed_kmh) -> float`
+### `initial_spread_index(ffmc, *, wind_speed_kmh, constants="1987") -> float`
 
 Eqs. 24–26. Expected rate of spread. This is where wind enters the chain.
 

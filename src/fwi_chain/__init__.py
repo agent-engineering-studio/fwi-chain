@@ -3,7 +3,9 @@
 from importlib.metadata import version
 
 from fwi_chain.chain import (
+    CFFDRS_PARAMS,
     STANDARD_PARAMS,
+    Constants,
     FwiOutputs,
     FwiParams,
     FwiState,
@@ -42,11 +44,13 @@ from fwi_chain.walk import (
 __version__ = version("fwi-chain")
 
 __all__ = [
+    "CFFDRS_PARAMS",
     "EFFIS_FWI_CLASSES",
     "QUANTILE_LEVELS",
     "STANDARD_PARAMS",
     "ChainDay",
     "ChainPoint",
+    "Constants",
     "Driver",
     "Explanation",
     "FwiOutputs",
