@@ -1,0 +1,60 @@
+/* Titillium Web, served with the page (no CDN). */
+@font-face { font-family: "Titillium Web"; font-weight: 400; font-display: swap;
+  src: url("vendor/bootstrap-italia/fonts/Titillium_Web/titillium-web-v10-latin-ext_latin-regular.woff2") format("woff2"); }
+@font-face { font-family: "Titillium Web"; font-weight: 600; font-display: swap;
+  src: url("vendor/bootstrap-italia/fonts/Titillium_Web/titillium-web-v10-latin-ext_latin-600.woff2") format("woff2"); }
+@font-face { font-family: "Titillium Web"; font-weight: 700; font-display: swap;
+  src: url("vendor/bootstrap-italia/fonts/Titillium_Web/titillium-web-v10-latin-ext_latin-700.woff2") format("woff2"); }
+
+/* The chart: the FWI over the days, on the EFFIS class bands. */
+#grafico { width: 100%; max-width: 900px; height: auto; font-size: 12px; }
+#grafico .griglia { stroke: #fff; stroke-width: 1; }
+#grafico .asse { stroke: #5d7083; stroke-width: 1; }
+#grafico text { fill: #33485c; }
+#grafico .fascia-0 { fill: #d5ebd3; }
+#grafico .fascia-1 { fill: #fbf0b4; }
+#grafico .fascia-2 { fill: #fbd5a0; }
+#grafico .fascia-3 { fill: #f3aaa4; }
+#grafico .fascia-4 { fill: #cf8d92; }
+#grafico .fascia-5 { fill: #a58aa6; }
+#grafico .linea { fill: none; stroke: #17324d; stroke-width: 2; stroke-linejoin: round; }
+#grafico .punto { fill: #17324d; stroke: #17324d; stroke-width: 1.5; cursor: pointer; }
+#grafico .punto.avviamento { fill: #fff; }
+#grafico .punto.scelto { fill: #0066cc; stroke: #fff; stroke-width: 2; r: 7px; }
+#grafico .punto:focus-visible { outline: 2px solid #0066cc; outline-offset: 2px; }
+
+#tabella-giorni td, #tabella-giorni th { white-space: nowrap; }
+#tabella-giorni tbody tr { cursor: pointer; }
+#tabella-giorni tr.scelto > * { background: #e6f0fa; }
+#tabella-giorni .giorno { font-weight: 600; }
+.classe { display: inline-block; padding: 0 0.5rem; border-radius: 0.25rem; color: #17324d; }
+.classe-0 { background: #d5ebd3; }
+.classe-1 { background: #fbf0b4; }
+.classe-2 { background: #fbd5a0; }
+.classe-3 { background: #f3aaa4; }
+.classe-4 { background: #cf8d92; }
+.classe-5 { background: #a58aa6; color: #fff; }
+
+/* What moved the index: one bar per part, zero in the middle. */
+#barre { max-width: 900px; }
+.parte { display: grid; grid-template-columns: minmax(9rem, 16rem) 1fr 5rem; gap: 0.75rem;
+  align-items: center; padding: 0.4rem 0; border-bottom: 1px solid #e3e4e6; }
+.parte .nome { font-weight: 600; }
+.parte .letture { display: block; font-weight: 400; font-size: 0.875rem; color: #455a6f; }
+.parte .punti { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.barra { position: relative; height: 1.25rem; background: #f2f3f4; }
+.barra::after { content: ""; position: absolute; left: 50%; top: -0.2rem; bottom: -0.2rem;
+  border-left: 1px solid #5d7083; }
+.barra span { position: absolute; top: 0; bottom: 0; }
+.barra .su { left: 50%; background: #b3261e; }
+.barra .giu { right: 50%; background: #0066cc; }
+.parte.memoria .barra .su, .parte.memoria .barra .giu { background: #5d7083; }
+@media (max-width: 576px) {
+  .parte { grid-template-columns: 1fr 4rem; }
+  .parte .barra { grid-column: 1 / -1; grid-row: 2; }
+}
+
+/* The header: the name of the body, readable on the blue of Bootstrap Italia. */
+.it-header-center-wrapper { background: #0066cc; }
+.it-header-center-wrapper .it-brand-title { color: #fff; font-size: 1.6rem; font-weight: 600; line-height: 1.2; }
+.it-header-center-wrapper .it-brand-tagline { color: #fff; font-size: 1rem; }

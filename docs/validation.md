@@ -5,12 +5,42 @@ they were transcribed correctly is to compare them with a known, published case.
 A test suite of properties alone ("FWI goes up with wind") would stay green with
 a wrong coefficient. That is why the suite has two layers.
 
-## 1. The reference day, to 1e-9
+## 1. Against cffdrs, over 48 days
 
-[`tests/test_chain.py::test_published_reference_day`](https://github.com/agent-engineering-studio/fwi-chain/blob/main/tests/test_chain.py) runs
-the first day of the test series that ships with
-[`cffdrs`](https://cran.r-project.org/package=cffdrs), the reference R
-implementation of Van Wagner's equations:
+[`cffdrs`](https://cran.r-project.org/package=cffdrs) is the reference R
+implementation. It ships a test series of 48 days (13 April to 30 May 1985,
+the sample data of Van Wagner & Pickett 1985) and its own output for it. The
+[benchmark](benchmark.md) walks this library over the same days, in CI:
+
+| Code | Largest difference from cffdrs over 48 days |
+|---|---|
+| FFMC | 0.123 |
+| DMC | 0.065 |
+| DC | 0.005 |
+| ISI | 0.252 |
+| BUI | 0.063 |
+| FWI | 0.254 |
+
+On all 48 days the two give the same EFFIS danger class.
+
+The numbers are close, not equal, and the reason is known. This library
+follows the equations as printed in Van Wagner (1987): 147.2 in the FFMC scale
+(Eq. 1), 1/43.43 in the DMC (Eq. 12). cffdrs follows the FORTRAN program of
+1985, which has 147.27723 and 0.023. With those two constants all six codes
+agree with cffdrs to 0.006.
+
+!!! note "A correction"
+    Up to 1.1.0 these pages said the library was "verified against the cffdrs
+    reference day to 1e-9". That was not accurate. The inputs of that day are
+    the first day of the cffdrs series; the six expected values to 1e-9 are
+    this library's own. cffdrs gives FFMC 87.65, ISI 10.78 and FWI 10.04 for
+    that day, against 87.69, 10.85 and 10.10 here.
+
+## 1b. The first day, to 1e-9
+
+[`tests/test_chain.py::test_published_reference_day`](https://github.com/agent-engineering-studio/fwi-chain/blob/main/tests/test_chain.py)
+pins the six codes of the first day of that series, as this library computes
+them:
 
 | Input | Value |
 |---|---|
@@ -21,7 +51,7 @@ implementation of Van Wagner's equations:
 | Wind | 25 km/h |
 | Rain | 0 mm |
 
-| Output | Expected | Tolerance |
+| Output | Pinned value | Tolerance |
 |---|---|---|
 | FFMC | 87.692980092774 | 1e-9 absolute |
 | DMC | 8.5450511359998 | 1e-9 |
@@ -30,23 +60,19 @@ implementation of Van Wagner's equations:
 | BUI | 8.4904265358371 | 1e-9 |
 | FWI | 10.096371392382 | 1e-9 |
 
-The tolerance is tight on purpose. Nothing is being calibrated: a transcription
-is being checked. A deviation larger than 1e-9 means a wrong coefficient, not
-floating-point noise.
-
-Check it yourself in one line:
+A pinned value shows a change; it does not show the value is right. What
+shows that is the comparison above, and the DC, which can be checked by hand:
+see [the worked example](how-fwi-works.md#a-worked-example-by-hand).
 
 ```bash
 python examples/01_single_day.py
 ```
 
-The DC can even be checked by hand. See
-[the worked example](how-fwi-works.md#a-worked-example-by-hand).
-
 ## 2. What a single day cannot reach
 
-The reference day is dry, so it never exercises the rain branches. The rest of
-the suite covers them, along with the behaviour the science requires:
+The cffdrs series has 14 days with rain, so it reaches the rain branches. The
+rest of the suite covers each of them on purpose, along with the behaviour the
+science requires:
 
 | Test | What it guards |
 |---|---|
@@ -70,6 +96,8 @@ uv run ruff check            # lint
 uv run ruff format --check   # formatting
 uv run mypy                  # --strict, on src and tests
 uv run pytest --cov          # tests, coverage must stay ≥ 90 %
+uv run python -m benchmarks.run --check        # the known cases
+uv run python -m benchmarks.faithful --check   # the text check
 uv build                     # the package builds
 ```
 

@@ -1,0 +1,16 @@
+.git
+.venv
+**/__pycache__
+.mypy_cache
+.pytest_cache
+.ruff_cache
+.coverage
+htmlcov
+dist
+build
+site
+docs
+**/.ipynb_checkpoints
+**/node_modules
+app/.venv
+app/static/vendor

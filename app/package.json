@@ -1,0 +1,8 @@
+{
+  "name": "fwi-chain-diario-vendor",
+  "private": true,
+  "description": "Bootstrap Italia, copied into static/vendor so the page needs no CDN.",
+  "dependencies": {
+    "bootstrap-italia": "2.18.3"
+  }
+}

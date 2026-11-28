@@ -6,6 +6,55 @@ All notable changes to this project are documented here. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-28
+
+Additions only: nothing in 1.1.0 changed. The package still has no
+dependencies; the MCP server is behind the `mcp` extra.
+
+### Added
+
+- `catch_up()`: the daily update in one call. A stored state more than
+  `max_gap_days` before the target day is discarded at exactly that limit.
+  Calling `days_to_walk()` and then `walk_chain()` carried a state up to twice
+  the limit: both are unchanged, and `catch_up()` is the call that cannot make
+  that mistake. `start_is_stale()` is the test alone.
+- `effis_class()` and `EFFIS_FWI_CLASSES`: the six fire danger classes EFFIS
+  maps an FWI in, with the boundaries it publishes ("very extreme", above 70,
+  was added by EFFIS in 2021).
+- `explain_change()` (`fwi_chain.explain`): what moved the FWI from one day to
+  the next. The chain's memory, and the FWI points moved by temperature,
+  humidity, wind and rain, which add up exactly (Shapley split).
+- `fwi_chain.facts`: `day_facts()`, `walk_facts()` and `distribution_facts()`
+  give the chain's answers as plain data, with units in the key names and the
+  rule that a fire weather index is not an alert.
+- `fwi_chain.check.check_text()`: the numbers of a text that are not facts as
+  written (invented, in the wrong unit, rounded wrong).
+- An MCP server, `fwi-chain-mcp` (`pip install "fwi-chain[mcp]"`), on standard
+  input and output or streamable HTTP (port 8772): tools `walk`, `explain`,
+  `percentile` and `check`. It computes only from what a call gives it.
+- A benchmark of known cases, run in CI (`make bench`): the 48 days of the
+  `cffdrs` test series against cffdrs's own output, the rain each code
+  ignores, a stored state too old; and a faithfulness set for `check_text`.
+- A page in Italian for a public body, `app/` ("Il diario del pericolo
+  d'incendio"): the chain of one place day by day from the weather the body
+  gives, and what moved the index. It fetches nothing.
+- Seven notebooks in `notebooks/`, the first six written from `examples/`.
+- Docker (`Dockerfile`, `compose.yaml`: the page on 3007, the notebooks on
+  8885, the MCP server on 8772), a `Makefile` with `make help`,
+  `publiccode.yml`, `llms.txt`, `llms-full.txt` and an agent skill on the site.
+
+### Fixed
+
+- Documentation: the library was described as "verified against the cffdrs
+  reference day to 1e-9". It was not: the values pinned to 1e-9 are this
+  library's own. Measured against cffdrs's own output over its 48-day series,
+  the two differ by at most 0.25 FWI points (0.12 FFMC, 0.07 DMC) and give the
+  same EFFIS class every day. cffdrs follows the constants of the 1985 FORTRAN
+  program (147.27723, 0.023), this library the 1987 report as printed (147.2,
+  1/43.43). No number computed by the library changed.
+- Documentation and example 02 used an older six-class EFFIS scale ("very
+  low" below 5.2). They now use the scale EFFIS publishes today.
+
 ## [1.1.0] - 2026-11-28
 
 Additions only: nothing in 1.0.0 changed.

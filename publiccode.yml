@@ -1,0 +1,89 @@
+# The card of fwi-chain for the software catalogue of Developers Italia.
+# Checked in CI with italia/publiccode-parser-action.
+publiccodeYmlVersion: "0"
+name: fwi-chain
+url: "https://github.com/agent-engineering-studio/fwi-chain.git"
+landingURL: "https://agentengineering.it/fwi-chain/"
+releaseDate: "2026-11-28"
+softwareVersion: "1.2.0"
+platforms: [web, linux, mac, windows]
+categories: [data-analytics, data-visualization]
+usedBy: []
+developmentStatus: stable
+softwareType: library
+intendedAudience:
+  scope: [environment, emergency-services, local-authorities, science-and-technology]
+  countries: [IT]
+description:
+  it:
+    shortDescription: L'indice meteorologico di pericolo d'incendio (FWI), in Python e in una pagina per leggerlo giorno per giorno
+    longDescription: >
+      fwi-chain calcola il Fire Weather Index canadese (Van Wagner 1987): i sei codici FFMC, DMC,
+      DC, ISI, BUI e FWI a partire da quattro letture di mezzogiorno, cioè temperatura, umidità,
+      vento e pioggia delle 24 ore. È una libreria Python senza dipendenze: un giorno alla volta
+      con uno stato esplicito, la catena su molti giorni a partire da uno stato salvato, il
+      ricalcolo quando arriva una pioggia misurata meglio, una climatologia in 21 quantili, le
+      classi di pericolo di EFFIS e la spiegazione di che cosa ha mosso l'indice da un giorno
+      all'altro. Con il repository viene una pagina in italiano per un ente, con Bootstrap Italia:
+      l'ente porta il meteo di una località e la pagina mostra la catena giorno per giorno e che
+      cosa ha mosso l'indice. I numeri sono confrontati a ogni modifica con la serie di prova di
+      cffdrs, l'implementazione di riferimento in R: al massimo 0,25 punti di FWI di differenza
+      e la stessa classe in tutti i 48 giorni. Non scarica meteo, non usa dati personali e non
+      richiede chiavi o account. Non è un sistema di allerta: un indice di pericolo non è
+      un'allerta né una previsione di incendi, e il pericolo ufficiale resta quello pubblicato
+      da EFFIS, dal Dipartimento della Protezione Civile e dalle Regioni.
+    features:
+      - I sei codici del Fire Weather Index da quattro letture di mezzogiorno
+      - La catena su molti giorni, con i giorni non misurati saltati e mai azzerati
+      - Ricalcolo con la pioggia misurata
+      - Climatologia in 21 quantili e percentile di un valore
+      - Classi di pericolo EFFIS
+      - Che cosa ha mosso l'indice da un giorno all'altro
+      - Pagina per l'ente con Bootstrap Italia
+      - Server MCP e controllo dei numeri per gli assistenti
+    screenshots:
+      - docs/images/diario-catena.png
+  en:
+    shortDescription: The Fire Weather Index (FWI), in Python and on a page to read it day by day
+    longDescription: >
+      fwi-chain computes the Canadian Fire Weather Index (Van Wagner 1987): the six codes FFMC,
+      DMC, DC, ISI, BUI and FWI from four noon readings, that is temperature, humidity, wind and
+      the rain of the previous 24 hours. It is a Python library with no dependencies: one day at
+      a time with an explicit state, the chain over many days from a stored state, redone when
+      better rain arrives, a climatology in 21 quantiles, the EFFIS danger classes, and what
+      moved the index from one day to the next. The repository also has a page in Italian for a
+      public body, built with Bootstrap Italia: the body brings the weather of one place and the
+      page shows the chain day by day and what moved the index. The numbers are compared on
+      every change with the test series of cffdrs, the reference implementation in R: at most
+      0.25 FWI points apart, and the same class on all 48 days. It downloads no weather, uses no
+      personal data and needs no key or account. It is not an alert system: a fire weather index
+      is not an alert and not a forecast of fires, and the official fire danger stays the one
+      published by EFFIS, the Civil Protection Department and the regions.
+    features:
+      - The six codes of the Fire Weather Index from four noon readings
+      - The chain over many days, with days not measured skipped and never zeroed
+      - Redone with measured rain
+      - A climatology in 21 quantiles and the percentile of a value
+      - EFFIS danger classes
+      - What moved the index from one day to the next
+      - A page for public bodies with Bootstrap Italia
+      - An MCP server and a check of the numbers for assistants
+    screenshots:
+      - docs/images/diario-catena.png
+organisation:
+  name: Agent Engineering Studio
+  uri: "https://github.com/agent-engineering-studio"
+legal:
+  license: Apache-2.0
+  mainCopyrightOwner: Agent Engineering Studio
+maintenance:
+  type: community
+  contacts:
+    - name: Giuseppe Zileni
+localisation:
+  localisationReady: true
+  availableLanguages: [it, en]
+IT:
+  countryExtensionVersion: "1.0"
+  riuso:
+    codiceIPA: ""   # empty until the software belongs to a public administration

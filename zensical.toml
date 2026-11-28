@@ -2,7 +2,7 @@
 #   uv run --group docs zensical serve
 [project]
 site_name = "fwi-chain"
-site_description = "The Canadian Fire Weather Index chain (Van Wagner 1987), pure Python, verified against the published reference to 1e-9"
+site_description = "The Canadian Fire Weather Index chain (Van Wagner 1987), pure Python, no dependencies, measured against the cffdrs test series"
 site_url = "https://agentengineering.it/fwi-chain/"
 repo_url = "https://github.com/agent-engineering-studio/fwi-chain"
 repo_name = "agent-engineering-studio/fwi-chain"
@@ -22,13 +22,17 @@ nav = [
     { "How the FWI works" = "how-fwi-works.md" },
     { "Getting started" = "getting-started.md" },
     { "Cookbook" = "cookbook.md" },
+    { "Facts, explanation and MCP" = "ai.md" },
+    { "Notebooks, the page and Docker" = "examples.md" },
     { "FAQ" = "faq.md" },
   ] },
   { "Reference" = [
     { "API reference" = "api.md" },
     { "Reference (generated)" = "reference.md" },
     { "Validation" = "validation.md" },
+    { "Benchmark" = "benchmark.md" },
   ] },
+  { "Riuso (PA)" = "riuso.md" },
   { "Social media kit" = "social-kit.md" },
   { "Changelog" = "changelog.md" },
   { "Contributing" = "contributing.md" },

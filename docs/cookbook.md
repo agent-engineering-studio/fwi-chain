@@ -193,16 +193,17 @@ handles a full season for thousands of locations in seconds.
 
 ## Danger classes
 
-Classes are regional. Here are the EFFIS thresholds for Europe:
+The EFFIS classes for Europe are in the library: `effis_class(fwi)`. Classes are
+regional; for your own, the same five lines with your thresholds:
 
 ```python
 DANGER_CLASSES = [
+    (70.0, "very extreme"),
     (50.0, "extreme"),
     (38.0, "very high"),
     (21.3, "high"),
     (11.2, "moderate"),
-    (5.2, "low"),
-    (0.0, "very low"),
+    (0.0, "low"),
 ]
 
 

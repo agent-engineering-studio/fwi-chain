@@ -8,8 +8,9 @@ Fire Weather Index System, used by fire agencies worldwide and by EFFIS for Euro
 
 ### Is this an official implementation?
 
-No. It is an independent transcription of Van Wagner (1987), verified against
-the reference day of the `cffdrs` R package to 1e-9. See [Validation](validation.md).
+No. It is an independent transcription of Van Wagner (1987), measured against
+the 48-day test series of the `cffdrs` R package: at most 0.25 FWI points apart,
+the same danger class every day. See [Validation](validation.md).
 
 ### How does it compare with `cffdrs` and `xclim`?
 
@@ -21,7 +22,9 @@ the reference day of the `cffdrs` R package to 1e-9. See [Validation](validation
 | State between days | explicit value you persist | inside the data frame | inside the time dimension |
 | Best for | services, databases, streams, teaching | research in R | climate grids, NetCDF |
 
-They answer the same equations. Pick the one that fits your pipeline.
+They answer the same equations, with one known difference: `cffdrs` follows the
+constants of the 1985 FORTRAN program, this library the 1987 report as printed.
+See [Validation](validation.md). Pick the one that fits your pipeline.
 
 ### Why should I persist the state? Can't I just start from 85 / 6 / 15 every day?
 

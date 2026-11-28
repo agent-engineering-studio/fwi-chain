@@ -24,6 +24,8 @@ from fwi_chain import (
     NoonObservation,
     ChainPoint,
     ChainDay,
+    catch_up,
+    start_is_stale,
     # climatology (1.1)
     quantiles,
     percentile,
@@ -31,8 +33,18 @@ from fwi_chain import (
     accumulate_monthly,
     coverage_is_valid,
     QUANTILE_LEVELS,
+    # classes and what moved the index (1.2)
+    effis_class,
+    EFFIS_FWI_CLASSES,
+    explain_change,
+    Explanation,
+    Driver,
 )
 ```
+
+The facts, the text check and the MCP server are in their own modules
+(`fwi_chain.facts`, `fwi_chain.check`, `fwi_chain.mcp_server`): see
+[Facts, explanation and MCP](ai.md).
 
 All functions are **pure**: no I/O, no global state, no clock. They are safe to call
 from any thread or process. Weather arguments are **keyword-only** and carry their
@@ -231,6 +243,21 @@ The days to walk to bring a chain up to `target`: from the day after `last_day`,
 never further back than `max_gap_days` before `target`. `[target]` when `last_day`
 is `None`.
 
+### `catch_up(observations, target, *, start, params, max_gap_days) -> list[ChainDay]`
+
+*New in 1.2.* The daily update in one call: brings a chain up to `target`. A
+`start` more than `max_gap_days` before `target` is discarded, at exactly that
+limit, and `target` alone is walked from the standard codes; otherwise every
+day after `start` is walked.
+
+Use this instead of calling `days_to_walk` and then `walk_chain` yourself:
+that pair trims the window first and measures the gap from the trimmed window,
+so a state up to twice the limit old is carried on.
+
+### `start_is_stale(start, day, *, max_gap_days) -> bool`
+
+*New in 1.2.* Whether `start` is more than `max_gap_days` before `day`.
+
 ### `writable_days(walked, *, today) -> list[ChainDay]`
 
 The walked days on or before `today`. A forecast day is worth computing and must
@@ -296,3 +323,40 @@ but stay out of the distribution.
 
 Whether a stretch of days has enough observations to enter a climatology: at least
 `min_fraction` of them, and no run of missing days longer than `max_gap_days`.
+
+---
+
+## Danger classes
+
+*New in 1.2.*
+
+### `effis_class(fwi) -> str`
+
+The fire danger class EFFIS maps an FWI in: `"low"`, `"moderate"`, `"high"`,
+`"very high"`, `"extreme"`, `"very extreme"`. A boundary belongs to the class
+above it. Raises `ValueError` for a negative or non-finite FWI.
+
+### `EFFIS_FWI_CLASSES`
+
+`((0.0, "low"), (11.2, "moderate"), (21.3, "high"), (38.0, "very high"),
+(50.0, "extreme"), (70.0, "very extreme"))`: each class with the FWI it starts
+at, as EFFIS publishes them.
+
+---
+
+## What moved the index
+
+*New in 1.2.*
+
+### `explain_change(previous, today, *, params) -> Explanation`
+
+Takes apart the difference between the FWI of two consecutive walked days.
+
+| Field of `Explanation` | Meaning |
+|---|---|
+| `fwi_yesterday`, `fwi_today`, `change` | the two values and their difference |
+| `carry_over` | what the chain's memory alone did: today with yesterday's weather again |
+| `weather` | what the change in the weather did; `change == carry_over + weather` |
+| `drivers` | four `Driver(input, yesterday, today, effect)`, largest effect first; the effects add up to `weather` |
+
+See [Facts, explanation and MCP](ai.md) for how the split is made.

@@ -30,9 +30,11 @@ __all__ = [
     "ChainDay",
     "ChainPoint",
     "NoonObservation",
+    "catch_up",
     "correct_rain",
     "days_to_walk",
     "rewalk_with_rain",
+    "start_is_stale",
     "walk_chain",
     "writable_days",
 ]
@@ -147,6 +149,45 @@ def days_to_walk(target: date, *, last_day: date | None, max_gap_days: int) -> l
     if last_day is not None:
         first = max(last_day + timedelta(days=1), target - timedelta(days=max_gap_days))
     return [first + timedelta(days=i) for i in range((target - first).days + 1)]
+
+
+def start_is_stale(start: ChainPoint, day: date, *, max_gap_days: int) -> bool:
+    """Whether ``start`` is too old to carry a chain to ``day``.
+
+    True when ``start`` is more than ``max_gap_days`` before ``day``. It is
+    the test :func:`walk_chain` applies to ``days[0]``; ask it of the day you
+    are walking **to** when the walk does not begin right after ``start``.
+    """
+    return (day - start.day).days > max_gap_days
+
+
+def catch_up(
+    observations: Mapping[date, NoonObservation],
+    target: date,
+    *,
+    start: ChainPoint | None,
+    params: FwiParams,
+    max_gap_days: int,
+) -> list[ChainDay]:
+    """Bring one chain up to ``target``: the daily update, in one call.
+
+    A ``start`` more than ``max_gap_days`` before ``target`` is discarded, at
+    exactly that limit, and ``target`` alone is walked from the standard
+    codes. Otherwise every day after ``start`` up to ``target`` is walked, so
+    no drying day in between is skipped.
+
+    This is :func:`start_is_stale`, :func:`days_to_walk` and
+    :func:`walk_chain` in the order that keeps a stale state from being
+    carried: calling ``days_to_walk`` first trims the window to
+    ``max_gap_days``, and ``walk_chain`` then measures the gap from the
+    trimmed window, so a state up to twice the limit old would pass.
+    """
+    if start is not None and start_is_stale(start, target, max_gap_days=max_gap_days):
+        start = None
+    days = days_to_walk(
+        target, last_day=None if start is None else start.day, max_gap_days=max_gap_days
+    )
+    return walk_chain(observations, days, start=start, params=params, max_gap_days=max_gap_days)
 
 
 def writable_days(walked: Iterable[ChainDay], *, today: date) -> list[ChainDay]:

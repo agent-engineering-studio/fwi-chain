@@ -27,7 +27,13 @@ sys.path.insert(0, str(ROOT / "examples"))
 
 from weather import NoonReading, synthetic_season  # noqa: E402
 
-from fwi_chain import STANDARD_PARAMS, FwiOutputs, FwiState, advance  # noqa: E402
+from fwi_chain import (  # noqa: E402
+    EFFIS_FWI_CLASSES,
+    STANDARD_PARAMS,
+    FwiOutputs,
+    FwiState,
+    advance,
+)
 
 OUT = ROOT / "docs" / "images"
 
@@ -45,7 +51,8 @@ FWI_C = "#e34948"  # slot 8, red: the index itself, always this colour
 RAIN_C = "#86b6ef"  # blue ramp step 250
 
 # EFFIS danger classes, lower bounds.
-CLASSES = [(5.2, "low"), (11.2, "moderate"), (21.3, "high"), (38.0, "very high"), (50.0, "extreme")]
+# Where each EFFIS class starts ("low" starts at 0 and needs no line).
+CLASSES = [c for c in EFFIS_FWI_CLASSES if c[0] > 0]
 
 plt.rcParams.update(
     {

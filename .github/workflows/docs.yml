@@ -27,6 +27,8 @@ jobs:
           enable-cache: true
       - run: uv sync --locked --only-group docs
       - run: uv run --no-sync zensical build --strict
+      # llms.txt, llms-full.txt and the agent skill, next to the pages.
+      - run: uv run --no-sync python tools/build_llms.py
       - if: github.event_name != 'pull_request'
         uses: actions/upload-pages-artifact@v5
         with:
